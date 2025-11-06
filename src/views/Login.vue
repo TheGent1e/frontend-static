@@ -130,15 +130,22 @@ const handleLogin = async () => {
         if (response && response.code === 1) {
           // 登录成功，保存用户信息到store
           const userStore = useUserStore()
+          console.log('登录响应数据:', response.data)
+          console.log('token是否存在于响应中:', response.data.token ? '是' : '否')
+          
           userStore.login(response.data)
           
           // 将完整的用户信息存储到localStorage，确保包含所有字段
           localStorage.setItem('userInfo', JSON.stringify(response.data))
+          console.log('userInfo已存储到localStorage')
           
           // 特别确保token单独存储
           localStorage.setItem('token', response.data.token)
+          console.log('token已单独存储到localStorage:', response.data.token)
           
-          // 如果用户选择记住密码，只存储用户名，不存储密码或token等敏感信息
+          // 验证token是否成功存储
+          const storedToken = localStorage.getItem('token')
+          console.log('验证token存储结果:', storedToken ? '成功' : '失败')
           if (loginForm.rememberMe) {
             rememberPassword()
           } else {

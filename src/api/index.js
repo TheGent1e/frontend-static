@@ -22,14 +22,30 @@ const cozeApi = axios.create({
 // 请求拦截器
 api.interceptors.request.use(
   config => {
+    // 确保headers对象存在
+    if (!config.headers) {
+      config.headers = {}
+    }
+
     // 从localStorage获取token
     const token = localStorage.getItem('token')
+    console.log('请求拦截器 - 检查token:', token ? '存在' : '不存在')
+    console.log('请求URL:', config.url)
+
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`
+      // 添加token到请求头，同时支持多种常用认证头格式
+      config.headers.token = token; // 原始格式
+      config.headers.Authorization = `Bearer ${token}`; // 标准Bearer格式
+      console.log('添加token到请求头(token字段):', token)
+      console.log('添加token到请求头(Authorization字段):', `Bearer ${token}`)
+      console.log('请求头信息:', JSON.stringify(config.headers))
+    } else {
+      console.warn('未找到token，无法添加到请求头')
     }
     return config
   },
   error => {
+    console.error('请求拦截器错误:', error)
     return Promise.reject(error)
   }
 )
