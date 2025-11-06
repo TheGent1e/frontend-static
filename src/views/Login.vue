@@ -132,9 +132,11 @@ const handleLogin = async () => {
           const userStore = useUserStore()
           userStore.login(response.data)
           
-          // 将token单独存储到sessionStorage
-          sessionStorage.setItem('token', response.data.token)
+          // 将完整的用户信息存储到localStorage，确保包含所有字段
+          localStorage.setItem('userInfo', JSON.stringify(response.data))
           
+          // 特别确保token单独存储
+          localStorage.setItem('token', response.data.token)
           
           // 如果用户选择记住密码，只存储用户名，不存储密码或token等敏感信息
           if (loginForm.rememberMe) {

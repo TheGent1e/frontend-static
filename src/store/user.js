@@ -3,23 +3,30 @@ import { defineStore } from 'pinia'
 export const useUserStore = defineStore('user', {
   state: () => ({
     userInfo: null,
-    token: sessionStorage.getItem('token') || '',
-    role: sessionStorage.getItem('role') || '',
-    isLoggedIn: false
+    token: localStorage.getItem('token') || '',
+    role: localStorage.getItem('role') || '',
+    isLoggedIn: !!localStorage.getItem('token')
   }),
 
   actions: {
     // 登录
     login(userData) {
-      this.userInfo = userData.userInfo
+      // 根据后端API文档，userData直接包含所需的字段
+      this.userInfo = {
+        id: userData.id,
+        name: userData.name,
+        username: userData.username
+      }
       this.token = userData.token
-      this.role = userData.userInfo.role
+      // 将数字角色转换为字符串便于前端使用
+      // 根据需求，只有role为0时才代表管理员
+      this.role = userData.role === 0 ? 'admin' : 'user'
       this.isLoggedIn = true
 
-      // 保存到sessionStorage
-      sessionStorage.setItem('token', userData.token)
-      sessionStorage.setItem('userInfo', JSON.stringify(userData.userInfo))
-      sessionStorage.setItem('role', userData.userInfo.role)
+      // 持久化存储
+      localStorage.setItem('token', userData.token)
+      localStorage.setItem('role', this.role) // 存储转换后的字符串角色
+      localStorage.setItem('userInfo', JSON.stringify(this.userInfo))
     },
 
     // 登出
@@ -29,22 +36,22 @@ export const useUserStore = defineStore('user', {
       this.role = ''
       this.isLoggedIn = false
 
-      // 清除sessionStorage
-      sessionStorage.removeItem('token')
-      sessionStorage.removeItem('userInfo')
-      sessionStorage.removeItem('role')
+      // 清除本地存储
+      localStorage.removeItem('token')
+      localStorage.removeItem('role')
+      localStorage.removeItem('userInfo')
     },
 
-    // 恢复用户信息
+    // 从本地存储恢复用户信息
     restoreUser() {
-      const token = sessionStorage.getItem('token')
-      const userInfo = sessionStorage.getItem('userInfo')
-      const role = sessionStorage.getItem('role')
+      const token = localStorage.getItem('token')
+      const role = localStorage.getItem('role')
+      const userInfoStr = localStorage.getItem('userInfo')
 
-      if (token && userInfo && role) {
+      if (token && role && userInfoStr) {
         this.token = token
-        this.userInfo = JSON.parse(userInfo)
         this.role = role
+        this.userInfo = JSON.parse(userInfoStr)
         this.isLoggedIn = true
       }
     }

@@ -269,13 +269,22 @@ onMounted(() => {
 const loadUserData = async () => {
   loading.value = true
   try {
-    // 从sessionStorage读取用户信息
-    const storedUserInfo = sessionStorage.getItem('userInfo')
+    // 首先从localStorage获取用户基本信息（登录时已存储）
+    const storedUserInfo = localStorage.getItem('userInfo')
     if (storedUserInfo) {
       try {
-        userInfo.value = JSON.parse(storedUserInfo)
+        const parsedUserInfo = JSON.parse(storedUserInfo)
+        // 保持用户信息的原始结构，并确保有必要的属性
+        userInfo.value = {
+          ...parsedUserInfo,
+          // 只有当这些属性不存在时才使用默认值
+          age: parsedUserInfo.age || 65,
+          gender: parsedUserInfo.gender || '男',
+          healthRecordNumber: parsedUserInfo.healthRecordNumber || 'HR20240001',
+          phone: parsedUserInfo.phone || parsedUserInfo.username
+        }
       } catch (e) {
-        console.error('解析用户信息失败', e)
+        console.error('解析localStorage用户信息失败', e)
       }
     }
     

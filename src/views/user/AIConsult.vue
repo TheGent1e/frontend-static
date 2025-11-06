@@ -365,7 +365,7 @@ const formatTime = (timestamp) => {
 // 生命周期钩子
 onMounted(() => {
   // 从本地存储加载数据
-  aiStore.loadFromSessionStorage()
+  aiStore.loadFromLocalStorage()
   aiStore.loadFontSize()
   
   // 添加默认问候语（如果没有现有对话）

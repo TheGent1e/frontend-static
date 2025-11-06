@@ -22,10 +22,10 @@ const cozeApi = axios.create({
 // 请求拦截器
 api.interceptors.request.use(
   config => {
-    // 获取token并设置到请求头
-    const token = sessionStorage.getItem('token')
+    // 从localStorage获取token
+    const token = localStorage.getItem('token')
     if (token) {
-      config.headers.token = token // 后端要求的token头
+      config.headers.Authorization = `Bearer ${token}`
     }
     return config
   },
@@ -46,10 +46,22 @@ api.interceptors.response.use(
       // 服务器返回错误状态码
       const { status } = error.response
       if (status === 401) {
-        // 未授权，清除用户信息并重定向到登录页
-        sessionStorage.removeItem('userInfo')
-        sessionStorage.removeItem('role')
-        sessionStorage.removeItem('token')
+        // 未授权，清除token并重定向到登录页
+        localStorage.removeItem('token')
+        localStorage.removeItem('role')
+        localStorage.removeItem('userInfo')
+
+        // 确保用户状态被重置
+        try {
+          const { useUserStore } = require('../store/user')
+          const userStore = useUserStore()
+          if (userStore) {
+            userStore.logout()
+          }
+        } catch (e) {
+          console.warn('无法重置用户状态:', e)
+        }
+
         window.location.href = '/login'
       }
     }
@@ -63,47 +75,33 @@ export default {
   user: {
     // 登录
     login(data) {
-      // 模拟登录API
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          // 模拟成功响应
-          resolve({
-            code: 200,
-            message: '登录成功',
-            data: {
-              token: 'mock-token-123456',
-              userInfo: {
-                id: 1,
-                username: data.username,
-                name: data.username === 'admin' ? '管理员' : '测试用户',
-                role: data.username === 'admin' ? 'admin' : 'user'
-              }
-            }
-          })
-        }, 500)
+      // 根据后端API文档，调用实际的登录接口
+      // 后端不再需要前端传递role参数，直接从登录信息中判断角色
+      return api.post('/login', {
+        username: data.username,
+        password: data.password
       })
     },
 
     // 获取用户信息
     getUserInfo() {
-      // 模拟获取用户信息API
+      // 模拟API响应，使用后端API的code: 1格式
       return new Promise((resolve) => {
         setTimeout(() => {
-          // 模拟成功响应
           resolve({
-            code: 200,
-            message: '获取成功',
+            code: 1,
             data: {
               id: 1,
-              name: '测试用户',
+              name: '张三',
               age: 65,
               gender: '男',
-              phone: '13800138000',
-              address: '北京市海淀区',
-              bloodType: 'A型',
-              allergy: '青霉素',
-              emergencyContact: '李四 13900139000'
-            }
+              healthRecordNumber: 'HR20240001',
+              phone: '13800138001',
+              address: '北京市朝阳区健康路88号',
+              emergencyContact: '李四',
+              emergencyPhone: '13900139001'
+            },
+            msg: 'success'
           })
         }, 500)
       })
@@ -111,22 +109,41 @@ export default {
 
     // 获取健康数据
     getHealthData() {
-      // 模拟获取健康数据API
+      // 模拟API响应，使用后端API的code: 1格式
       return new Promise((resolve) => {
         setTimeout(() => {
-          // 模拟成功响应
           resolve({
-            code: 200,
-            message: '获取成功',
+            code: 1,
             data: {
-              heartRate: 72,
-              bloodPressure: '120/80',
-              bloodSugar: 5.6,
-              weight: 65,
-              height: 170,
-              temperature: 36.5,
-              lastCheckTime: '2024-01-15 10:30:00'
-            }
+              bloodPressure: {
+                latest: { systolic: 120, diastolic: 80, date: '2024-10-23' },
+                trend: [
+                  { date: '2024-10-20', systolic: 125, diastolic: 82 },
+                  { date: '2024-10-21', systolic: 122, diastolic: 81 },
+                  { date: '2024-10-22', systolic: 123, diastolic: 80 },
+                  { date: '2024-10-23', systolic: 120, diastolic: 80 }
+                ]
+              },
+              bloodSugar: {
+                latest: { value: 5.6, date: '2024-10-23' },
+                trend: [
+                  { date: '2024-10-20', value: 5.8 },
+                  { date: '2024-10-21', value: 5.7 },
+                  { date: '2024-10-22', value: 5.9 },
+                  { date: '2024-10-23', value: 5.6 }
+                ]
+              },
+              heartRate: {
+                latest: { value: 72, date: '2024-10-23' },
+                trend: [
+                  { date: '2024-10-20', value: 75 },
+                  { date: '2024-10-21', value: 73 },
+                  { date: '2024-10-22', value: 74 },
+                  { date: '2024-10-23', value: 72 }
+                ]
+              }
+            },
+            msg: 'success'
           })
         }, 500)
       })
@@ -134,36 +151,35 @@ export default {
 
     // 获取服务记录
     getServiceRecords() {
-      // 模拟获取服务记录API
+      // 模拟API响应，使用后端API的code: 1格式
       return new Promise((resolve) => {
         setTimeout(() => {
-          // 模拟成功响应
           resolve({
-            code: 200,
-            message: '获取成功',
-            data: {
-              records: [
-                {
-                  id: 1,
-                  serviceType: '体检',
-                  serviceTime: '2024-01-10 09:00:00',
-                  doctor: '张医生',
-                  department: '内科',
-                  description: '常规体检',
-                  status: '已完成'
-                },
-                {
-                  id: 2,
-                  serviceType: '咨询',
-                  serviceTime: '2024-01-05 14:30:00',
-                  doctor: '李医生',
-                  department: '全科',
-                  description: '健康咨询',
-                  status: '已完成'
-                }
-              ],
-              total: 2
-            }
+            code: 1,
+            data: [
+              {
+                id: 1,
+                type: '健康体检',
+                date: '2024-10-15',
+                servicePerson: '张医生',
+                status: '已完成'
+              },
+              {
+                id: 2,
+                type: '上门问诊',
+                date: '2024-10-10',
+                servicePerson: '李护士',
+                status: '已完成'
+              },
+              {
+                id: 3,
+                type: '慢病管理',
+                date: '2024-10-05',
+                servicePerson: '王医生',
+                status: '已完成'
+              }
+            ],
+            msg: 'success'
           })
         }, 500)
       })

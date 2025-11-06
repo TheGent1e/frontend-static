@@ -29,7 +29,7 @@ export const useAIConsultStore = defineStore('aiConsult', {
         timestamp: new Date().toISOString()
       }
       this.conversations.push(newMessage)
-      this.saveToSessionStorage()
+      this.saveToLocalStorage()
     },
     
     // 添加AI回复
@@ -107,7 +107,7 @@ export const useAIConsultStore = defineStore('aiConsult', {
     },
     
     // 保存对话到会话存储（浏览器关闭时会自动清除）
-    saveToSessionStorage() {
+    saveToLocalStorage() {
       // 创建处理后的对话副本，只保留有效信息
       const processedConversations = this.conversations.map(msg => {
         if (msg.type === 'ai') {
@@ -125,7 +125,7 @@ export const useAIConsultStore = defineStore('aiConsult', {
     },
     
     // 从会话存储恢复对话
-    loadFromSessionStorage() {
+    loadFromLocalStorage() {
       // 使用用户特定的键来加载对话记录
       const key = this.getUserSpecificKey('ai_conversations')
       const saved = sessionStorage.getItem(key)

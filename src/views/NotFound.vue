@@ -19,7 +19,7 @@ const router = useRouter()
 // 返回首页方法
 const goHome = () => {
   // 判断用户是否已登录，跳转到相应的首页
-    const userRole = sessionStorage.getItem('role')
+  const userRole = localStorage.getItem('userRole')
   if (userRole === 'admin') {
     router.push('/admin/home')
   } else if (userRole === 'user') {
