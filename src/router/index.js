@@ -13,6 +13,13 @@ const routes = [
     component: () => import('../views/Login.vue'),
     meta: { requiresAuth: false }  // 元数据，标记不需要认证
   },
+  {
+    path: '/register', // 注册页面路由
+    name: 'Register',  // 路由名称
+    // 懒加载组件 - 按需加载，提高初始加载性能
+    component: () => import('../views/Register.vue'),
+    meta: { requiresAuth: false }  // 元数据，标记不需要认证
+  },
 
   // 管理员角色路由 - 需要管理员权限
   {

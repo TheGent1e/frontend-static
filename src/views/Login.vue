@@ -75,7 +75,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElLoading } from 'element-plus'
 import { useUserStore } from '../store/user'
 import api from '../api'
 
@@ -120,11 +120,17 @@ onMounted(() => {
 const handleLogin = async () => {
   loginFormRef.value.validate(async (valid) => {
     if (valid) {
-      loading.value = true
+      // 使用ElLoading替代自定义loading状态，提供更好的用户体验
+      const loadingInstance = ElLoading.service({
+        lock: true,
+        text: '登录中...',
+        background: 'rgba(0, 0, 0, 0.7)'
+      })
+      
       errorMessage.value = ''
       
       try {
-        // 调用登录API，不再传递role参数，使用后端返回的role值
+        // 调用登录API，确保与更新后的API调用方式一致
         const response = await api.user.login(loginForm)
         
         if (response && response.code === 1) {
@@ -142,15 +148,22 @@ const handleLogin = async () => {
           // 特别确保token单独存储
           localStorage.setItem('token', response.data.token)
           console.log('token已单独存储到localStorage:', response.data.token)
+          // 与userStore保持一致，将数字角色转换为字符串格式
+          const roleString = response.data.role === 0 ? 'admin' : 'user'
+          localStorage.setItem('role', roleString)
+          localStorage.setItem('userId', response.data.user?.id || '')
           
           // 验证token是否成功存储
           const storedToken = localStorage.getItem('token')
           console.log('验证token存储结果:', storedToken ? '成功' : '失败')
+          
           if (loginForm.rememberMe) {
             rememberPassword()
           } else {
             clearRememberedPassword()
           }
+          
+          ElMessage.success('登录成功')
           
           // 根据store中转换后的角色跳转到对应的首页
           if (userStore.role === 'admin') {
@@ -159,17 +172,23 @@ const handleLogin = async () => {
             router.push('/user/home')
           }
         } else {
-          // 处理后端返回的错误信息
-          errorMessage.value = response.msg || response.message || '用户名或密码错误'
+          // 处理后端返回的错误信息 - 更友好的错误提示
+          ElMessage.error('登录失败：' + (response?.msg || response?.message || '用户名或密码错误'))
         }
       } catch (error) {
         // 尝试从error.response中获取后端返回的错误信息
+        console.error('登录请求失败:', error)
         if (error.response && error.response.data) {
-          errorMessage.value = error.response.data.msg || error.response.data.message || '用户名或密码错误'
+          ElMessage.error('登录失败：' + (error.response.data.msg || error.response.data.message || '用户名或密码错误'))
         } else {
-          errorMessage.value = '用户名或密码错误'
+          ElMessage.error('登录失败：用户名或密码错误')
         }
       } finally {
+        // 确保始终关闭loading
+        setTimeout(() => {
+          loadingInstance.close()
+        }, 300)
+        // 重置组件内部的loading状态
         loading.value = false
       }
     }
@@ -189,7 +208,8 @@ const handleForgotPassword = () => {
 
 // 注册
 const handleRegister = () => {
-  ElMessage('注册功能开发中')
+  // 跳转到注册页面
+  router.push('/register')
 }
 
 // 记住密码

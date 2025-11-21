@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { ElMessage } from 'element-plus'
 
 // 创建axios实例
 const api = axios.create({
@@ -57,31 +58,80 @@ api.interceptors.response.use(
     return response.data
   },
   error => {
-    // 处理错误响应
-    if (error.response) {
-      // 服务器返回错误状态码
-      const { status } = error.response
-      if (status === 401) {
-        // 未授权，清除token并重定向到登录页
-        localStorage.removeItem('token')
-        localStorage.removeItem('role')
-        localStorage.removeItem('userInfo')
+    // 统一错误处理函数
+    const handleApiError = (error) => {
+      // 日志记录错误信息
+      console.error('API请求错误:', {
+        url: error.config?.url,
+        method: error.config?.method,
+        status: error.response?.status,
+        data: error.response?.data
+      })
 
-        // 确保用户状态被重置
-        try {
-          const { useUserStore } = require('../store/user')
-          const userStore = useUserStore()
-          if (userStore) {
-            userStore.logout()
-          }
-        } catch (e) {
-          console.warn('无法重置用户状态:', e)
+      // 获取错误消息
+      let errorMessage = '网络请求失败，请稍后重试'
+
+      if (error.response) {
+        // 服务器返回错误状态码
+        const { status, data } = error.response
+
+        // 根据状态码处理不同类型的错误
+        switch (status) {
+          case 400:
+            // 请求参数错误
+            errorMessage = data?.msg || '请求参数错误，请检查输入'
+            break
+          case 401:
+            // 未授权，清除token并重定向到登录页
+            errorMessage = data?.msg || '登录已过期，请重新登录'
+            localStorage.removeItem('token')
+            localStorage.removeItem('role')
+            localStorage.removeItem('userInfo')
+
+            // 确保用户状态被重置
+            try {
+              const { useUserStore } = require('../store/user')
+              const userStore = useUserStore()
+              if (userStore) {
+                userStore.logout()
+              }
+            } catch (e) {
+              console.warn('无法重置用户状态:', e)
+            }
+
+            ElMessage.error(errorMessage)
+            setTimeout(() => {
+              window.location.href = '/login'
+            }, 1500)
+            break
+          case 403:
+            // 权限不足
+            errorMessage = data?.msg || '没有权限执行此操作'
+            break
+          case 404:
+            // 资源不存在
+            errorMessage = data?.msg || '请求的资源不存在'
+            break
+          case 500:
+            // 服务器错误
+            errorMessage = data?.msg || '服务器内部错误，请稍后重试'
+            break
+          default:
+            // 其他错误
+            errorMessage = data?.msg || errorMessage
         }
-
-        window.location.href = '/login'
+      } else if (error.request) {
+        // 请求已发送但没有收到响应
+        errorMessage = '服务器无响应，请检查网络连接'
       }
+
+      // 显示错误消息
+      ElMessage.error(errorMessage)
+
+      return Promise.reject(error)
     }
-    return Promise.reject(error)
+
+    return handleApiError(error)
   }
 )
 
@@ -99,9 +149,159 @@ export default {
       })
     },
 
-    // 获取用户信息
+    // 注册
+    register(data) {
+      // 根据后端API文档，调用用户注册接口
+      return api.post('/register', {
+        username: data.username,
+        password: data.password,
+        name: data.name,
+        gender: data.gender,
+        age: data.age,
+        phone: data.phone,
+        email: data.email
+      })
+    },
+
+    // 获取用户基本信息
+    getUserBasicInfo(id = null) {
+      // 根据后端API文档，如果不提供id则获取当前登录用户信息
+      const userId = id || localStorage.getItem('userId')
+      if (!userId) {
+        // 如果没有用户ID，返回一个包含默认值的promise，避免页面崩溃
+        return Promise.resolve({
+          code: 1,
+          data: {},
+          msg: 'success'
+        })
+      }
+      // 根据后端API文档，调用获取用户基本信息接口
+      return api.get(`/user/getUserBasicInfo/${userId}`)
+    },
+
+    // 添加用户（管理员功能）
+    addUser(data) {
+      // 根据后端API文档，调用添加用户接口
+      return api.post('/user/addUser', {
+        username: data.username,
+        password: data.password,
+        name: data.name,
+        gender: data.gender,
+        age: data.age,
+        phone: data.phone,
+        email: data.email,
+        healthRecordNumber: data.healthRecordNumber,
+        role: data.role,
+        status: data.status,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        registerTime: new Date()
+      })
+    },
+
+    // 更新用户信息
+    updateUser(data) {
+      // 根据后端API文档，调用更新用户接口
+      // 过滤掉可能不存在的字段，只传递必要的字段
+      const updateData = {
+        id: data.id,
+        name: data.name,
+        gender: data.gender,
+        age: data.age,
+        phone: data.phone,
+        email: data.email
+      }
+      // 可选字段，只有存在时才添加
+      if (data.healthRecordNumber) updateData.healthRecordNumber = data.healthRecordNumber
+      if (data.role !== undefined) updateData.role = data.role
+      if (data.status !== undefined) updateData.status = data.status
+      if (data.username) updateData.username = data.username
+
+      // 添加更新时间
+      updateData.updatedAt = new Date()
+
+      return api.post('/user/updateUser', updateData)
+    },
+
+    // 删除用户（批量）
+    deleteUser(ids) {
+      // 根据后端API文档，调用删除用户接口
+      // 确保ids是字符串格式
+      const idsStr = Array.isArray(ids) ? ids.join(',') : String(ids)
+      return api.post(`/user/deleteUser/${idsStr}`)
+    },
+
+    // 获取用户信息 - 这个方法保留但优先使用getUserBasicInfo
     getUserInfo() {
-      // 模拟API响应，使用后端API的code: 1格式
+      // 实际API调用，使用后端API的接口
+      return api.get('/user/getUserInfo')
+    },
+
+    // 获取健康数据 - 由于API尚未开发，直接返回mock数据
+    getHealthData() {
+      console.log('使用健康数据mock数据，API尚未开发')
+      // 直接返回mock数据，不尝试调用实际API
+      return Promise.resolve({
+        code: 200,
+        data: {
+          bloodPressure: {
+            latest: { systolic: 120, diastolic: 80, date: new Date().toISOString().split('T')[0] }
+          },
+          bloodSugar: {
+            latest: { value: 5.8, date: new Date().toISOString().split('T')[0] }
+          },
+          heartRate: {
+            latest: { value: 72, date: new Date().toISOString().split('T')[0] }
+          }
+        },
+        message: '获取成功'
+      })
+    },
+
+    // 获取服务记录 - 由于API尚未开发，直接返回mock数据
+    getServiceRecords() {
+      console.log('使用服务记录mock数据，API尚未开发')
+      // 直接返回mock数据，不尝试调用实际API
+      return Promise.resolve({
+        code: 200,
+        data: [
+          {
+            id: 1,
+            type: '健康体检',
+            date: '2024-10-15',
+            employeeName: '张医生',
+            employeeDepartment: '体检科',
+            serviceTypeId: 1,
+            employeeId: 1,
+            status: 1
+          },
+          {
+            id: 2,
+            type: '上门问诊',
+            date: '2024-10-10',
+            employeeName: '李护士',
+            employeeDepartment: '社区医疗',
+            serviceTypeId: 2,
+            employeeId: 2,
+            status: 1
+          },
+          {
+            id: 3,
+            type: '慢病管理',
+            date: '2024-10-05',
+            employeeName: '王医生',
+            employeeDepartment: '内科',
+            serviceTypeId: 3,
+            employeeId: 3,
+            status: 1
+          }
+        ],
+        message: '获取成功'
+      })
+    },
+
+    // 备用模拟方法，当实际API不可用时使用
+    _mockGetUserInfo() {
       return new Promise((resolve) => {
         setTimeout(() => {
           resolve({
@@ -123,9 +323,7 @@ export default {
       })
     },
 
-    // 获取健康数据
-    getHealthData() {
-      // 模拟API响应，使用后端API的code: 1格式
+    _mockGetHealthData() {
       return new Promise((resolve) => {
         setTimeout(() => {
           resolve({
@@ -166,8 +364,7 @@ export default {
     },
 
     // 获取服务记录
-    getServiceRecords() {
-      // 模拟API响应，使用后端API的code: 1格式
+    _mockGetServiceRecords() {
       return new Promise((resolve) => {
         setTimeout(() => {
           resolve({
@@ -206,32 +403,32 @@ export default {
   admin: {
     // 获取用户列表
     getUserList(params) {
-      // 模拟API响应
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          const mockUsers = [
-            { id: 1, name: '张三', gender: '男', age: 65, phone: '13800138001', registerTime: '2024-01-15', status: 'active' },
-            { id: 2, name: '李四', gender: '女', age: 68, phone: '13800138002', registerTime: '2024-02-20', status: 'active' },
-            { id: 3, name: '王五', gender: '男', age: 72, phone: '13800138003', registerTime: '2024-03-10', status: 'inactive' },
-            { id: 4, name: '赵六', gender: '女', age: 63, phone: '13800138004', registerTime: '2024-04-05', status: 'active' },
-            { id: 5, name: '钱七', gender: '男', age: 70, phone: '13800138005', registerTime: '2024-05-12', status: 'active' }
-          ]
-          resolve({
-            code: 200,
-            data: {
-              list: mockUsers,
-              total: mockUsers.length,
-              page: params.page || 1,
-              pageSize: params.pageSize || 10
-            }
-          })
-        }, 500)
+      // 根据后端API文档，调用获取用户列表接口
+      // 添加错误处理的API调用包装器
+      return api.get('/user/getUserList', {
+        params: {
+          username: params.username || '',
+          phone: params.phone || '',
+          email: params.email || '',
+          role: params.role || '',
+          status: params.status || '',
+          begin: params.begin || '',
+          end: params.end || '',
+          page: params.page || 1,
+          pageSize: params.pageSize || 10
+        }
+      }).catch(error => {
+        // 捕获特定错误并提供更友好的消息
+        if (error.response?.status === 403) {
+          ElMessage.error('获取用户列表失败：权限不足')
+        }
+        throw error // 重新抛出错误以便上层处理
       })
     },
 
-    // 添加用户
-    addUser(data) {
-      return api.post('/admin/users', data)
+    // 查找部门ID和名称（复用已有的功能）
+    findDeptIdAndName() {
+      return api.get('/findDeptIdAndName')
     },
 
     // 更新用户

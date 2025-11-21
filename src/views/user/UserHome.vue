@@ -72,7 +72,10 @@
           <template #header>
             <div class="card-header">
               <span>个人信息</span>
-              <el-button type="text" size="small" @click="showInfoDetail">详情</el-button>
+              <div class="card-actions">
+                <el-button type="text" size="small" @click="showInfoDetail">详情</el-button>
+                <el-button type="primary" size="small" @click="showEditDialog">编辑</el-button>
+              </div>
             </div>
           </template>
           
@@ -96,6 +99,10 @@
             <div class="info-item">
               <span class="info-label">联系电话</span>
               <span class="info-value">{{ userInfo?.phone || '-' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">邮箱</span>
+              <span class="info-value">{{ userInfo?.email || '-' }}</span>
             </div>
           </div>
         </el-card>
@@ -211,12 +218,122 @@
     </div>
     
   </div>
+  
+  <!-- 用户信息详情对话框 -->
+  <el-dialog
+    v-model="detailDialogVisible"
+    title="个人信息详情"
+    width="600px"
+    :close-on-click-modal="false"
+  >
+    <div class="user-detail-content">
+      <div class="detail-section">
+        <h4 class="section-subtitle">基本信息</h4>
+        <div class="detail-grid">
+          <div class="detail-item">
+            <span class="detail-label">用户名</span>
+            <span class="detail-value">{{ userInfo?.username || '-' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">姓名</span>
+            <span class="detail-value">{{ userInfo?.name || '-' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">年龄</span>
+            <span class="detail-value">{{ userInfo?.age || '-' }}岁</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">性别</span>
+            <span class="detail-value">{{ userInfo?.gender || '-' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">健康档案号</span>
+            <span class="detail-value">{{ userInfo?.healthRecordNumber || '-' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">角色</span>
+            <span class="detail-value">{{ userInfo?.role === 0 ? '管理员' : '普通用户' }}</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="detail-section">
+        <h4 class="section-subtitle">联系方式</h4>
+        <div class="detail-grid">
+          <div class="detail-item">
+            <span class="detail-label">联系电话</span>
+            <span class="detail-value">{{ userInfo?.phone || '-' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">邮箱</span>
+            <span class="detail-value">{{ userInfo?.email || '-' }}</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="detail-section">
+        <h4 class="section-subtitle">账户信息</h4>
+        <div class="detail-grid">
+          <div class="detail-item">
+            <span class="detail-label">创建时间</span>
+            <span class="detail-value">{{ formatDateTime(userInfo?.createdAt) }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">状态</span>
+            <span class="detail-value">{{ userInfo?.status ? '启用' : '禁用' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="detailDialogVisible = false">关闭</el-button>
+        <el-button type="primary" @click="showEditDialog; detailDialogVisible = false">编辑信息</el-button>
+      </span>
+    </template>
+  </el-dialog>
+  
+  <!-- 用户信息编辑对话框 -->
+  <el-dialog
+    v-model="editDialogVisible"
+    title="编辑个人信息"
+    width="600px"
+    :close-on-click-modal="false"
+  >
+    <el-form :model="editForm" :rules="editRules" ref="editFormRef" label-width="120px">
+      <el-form-item label="姓名" prop="name">
+        <el-input v-model="editForm.name" placeholder="请输入真实姓名" />
+      </el-form-item>
+      <el-form-item label="年龄" prop="age">
+        <el-input-number v-model="editForm.age" :min="0" :max="150" placeholder="请输入年龄" />
+      </el-form-item>
+      <el-form-item label="性别" prop="gender">
+        <el-select v-model="editForm.gender" placeholder="请选择性别">
+          <el-option label="男" value="男" />
+          <el-option label="女" value="女" />
+          <el-option label="其他" value="其他" />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="联系电话" prop="phone">
+        <el-input v-model="editForm.phone" placeholder="请输入手机号" />
+      </el-form-item>
+      <el-form-item label="邮箱" prop="email">
+        <el-input v-model="editForm.email" placeholder="请输入邮箱" />
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="editDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="handleUpdateInfo" :loading="updateLoading">保存</el-button>
+      </span>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElLoading } from 'element-plus'
 import { ChatDotRound, ShoppingCart, Calendar, Document, ArrowRight } from '@element-plus/icons-vue'
 import api from '../../api'
 
@@ -231,6 +348,44 @@ const userInfo = ref(null)
 const healthData = ref(null)
 const serviceRecords = ref([])
 const loading = ref(false)
+
+// 对话框相关数据
+const detailDialogVisible = ref(false)
+const editDialogVisible = ref(false)
+const updateLoading = ref(false)
+const editFormRef = ref(null)
+
+// 编辑表单数据
+const editForm = reactive({
+  name: '',
+  age: 0,
+  gender: '',
+  phone: '',
+  email: ''
+})
+
+// 编辑表单验证规则
+const editRules = {
+  name: [
+    { required: true, message: '请输入真实姓名', trigger: 'blur' },
+    { min: 2, max: 20, message: '姓名长度应在2-20个字符之间', trigger: 'blur' }
+  ],
+  age: [
+    { required: true, message: '请输入年龄', trigger: 'blur' },
+    { type: 'number', min: 0, max: 150, message: '年龄应在0-150之间', trigger: 'blur' }
+  ],
+  gender: [
+    { required: true, message: '请选择性别', trigger: 'change' }
+  ],
+  phone: [
+    { required: true, message: '请输入手机号', trigger: 'blur' },
+    { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号格式', trigger: 'blur' }
+  ],
+  email: [
+    { required: true, message: '请输入邮箱', trigger: 'blur' },
+    { type: 'email', message: '请输入正确的邮箱格式', trigger: 'blur' }
+  ]
+}
 
 // 商城相关数据
 const recommendedProducts = ref([
@@ -266,73 +421,114 @@ onMounted(() => {
 })
 
 // 加载用户数据
-const loadUserData = async () => {
-  loading.value = true
-  try {
-    // 首先从localStorage获取用户基本信息（登录时已存储）
-    const storedUserInfo = localStorage.getItem('userInfo')
-    if (storedUserInfo) {
+  const loadUserData = async () => {
+    // 显示加载提示
+    const loadingInstance = ElLoading.service({
+      lock: true,
+      text: '加载中...',
+      background: 'rgba(0, 0, 0, 0.7)'
+    })
+    
+    try {
+      // 首先从localStorage获取用户基本信息（登录时已存储）
+      const storedUserInfo = localStorage.getItem('userInfo')
+      if (storedUserInfo) {
+        try {
+          const parsedUserInfo = JSON.parse(storedUserInfo)
+          // 保持用户信息的原始结构，并确保有必要的属性
+          userInfo.value = {
+            ...parsedUserInfo,
+            // 只有当这些属性不存在时才使用默认值
+            age: parsedUserInfo.age || 65,
+            gender: parsedUserInfo.gender || '男',
+            healthRecordNumber: parsedUserInfo.healthRecordNumber || 'HR20240001',
+            phone: parsedUserInfo.phone || parsedUserInfo.username,
+            email: parsedUserInfo.email || ''
+          }
+        } catch (e) {
+          console.error('解析localStorage用户信息失败', e)
+          ElMessage.warning('用户信息解析失败，使用默认设置')
+        }
+      }
+      
+      // 尝试从API获取最新用户信息
       try {
-        const parsedUserInfo = JSON.parse(storedUserInfo)
-        // 保持用户信息的原始结构，并确保有必要的属性
-        userInfo.value = {
-          ...parsedUserInfo,
-          // 只有当这些属性不存在时才使用默认值
-          age: parsedUserInfo.age || 65,
-          gender: parsedUserInfo.gender || '男',
-          healthRecordNumber: parsedUserInfo.healthRecordNumber || 'HR20240001',
-          phone: parsedUserInfo.phone || parsedUserInfo.username
+        const response = await api.user.getUserBasicInfo(userInfo.value?.id)
+        // 确保响应格式符合预期
+        if (response && response.code === 1 && response.data) {
+          const apiUserInfo = response.data
+          // 合并API返回的用户信息，保留现有信息的优先级
+          userInfo.value = {
+            ...userInfo.value,
+            ...apiUserInfo
+          }
+          
+          // 更新localStorage中的用户信息
+          localStorage.setItem('userInfo', JSON.stringify(userInfo.value))
+          localStorage.setItem('userId', userInfo.value.id)
         }
       } catch (e) {
-        console.error('解析localStorage用户信息失败', e)
+        console.warn('获取最新用户信息失败', e)
+        // 继续使用localStorage中的数据，不影响主要功能
       }
-    }
-    
-    // 健康数据和服务记录可以继续尝试API调用，但即使失败也不影响主要功能
-    try {
-      const healthDataRes = await api.user.getHealthData()
-      // 适配新的API返回格式（code: 1）
-      if (healthDataRes && healthDataRes.code === 1) {
-        healthData.value = healthDataRes.data || {
+      
+      // 健康数据和服务记录调用 - 使用改进的错误处理和mock数据
+      try {
+        const healthDataRes = await api.user.getHealthData()
+        // 支持API文档中的响应格式（code为200）和原有的格式（code为1）
+        if ((healthDataRes && healthDataRes.code === 200 && healthDataRes.data) ||
+            (healthDataRes && healthDataRes.code === 1 && healthDataRes.data)) {
+          healthData.value = healthDataRes.data
+        } else {
+          console.warn('获取健康数据返回格式不符合预期:', healthDataRes)
+          // 提供默认健康数据，确保UI显示正常
+          healthData.value = {
+            bloodPressure: { latest: { systolic: 120, diastolic: 80, date: new Date().toISOString().split('T')[0] } },
+            bloodSugar: { latest: { value: 5.8, date: new Date().toISOString().split('T')[0] } },
+            heartRate: { latest: { value: 72, date: new Date().toISOString().split('T')[0] } }
+          }
+        }
+      } catch (e) {
+        console.warn('获取健康数据失败，使用默认数据', e)
+        // 提供默认健康数据，确保UI显示正常
+        healthData.value = {
           bloodPressure: { latest: { systolic: 120, diastolic: 80, date: new Date().toISOString().split('T')[0] } },
           bloodSugar: { latest: { value: 5.8, date: new Date().toISOString().split('T')[0] } },
           heartRate: { latest: { value: 72, date: new Date().toISOString().split('T')[0] } }
         }
       }
-    } catch (e) {
-      console.warn('获取健康数据失败，使用默认数据', e)
-      // 提供默认健康数据，确保UI显示正常
-      healthData.value = {
-        bloodPressure: { latest: { systolic: 120, diastolic: 80, date: new Date().toISOString().split('T')[0] } },
-        bloodSugar: { latest: { value: 5.8, date: new Date().toISOString().split('T')[0] } },
-        heartRate: { latest: { value: 72, date: new Date().toISOString().split('T')[0] } }
+
+      try {
+        const serviceRecordsRes = await api.user.getServiceRecords()
+        // 支持API文档中的响应格式（code为200）和原有的格式（code为1）
+        if ((serviceRecordsRes && serviceRecordsRes.code === 200 && serviceRecordsRes.data) ||
+            (serviceRecordsRes && serviceRecordsRes.code === 1 && serviceRecordsRes.data)) {
+          serviceRecords.value = serviceRecordsRes.data
+        } else {
+          console.warn('获取服务记录返回格式不符合预期:', serviceRecordsRes)
+          // 提供默认服务记录数据，确保UI显示正常
+          serviceRecords.value = [
+              { id: 1, type: '健康体检', date: '2024-10-15', employeeName: '张医生', employeeDepartment: '体检科', status: 1 },
+              { id: 2, type: '上门问诊', date: '2024-10-10', employeeName: '李护士', employeeDepartment: '社区医疗', status: 1 },
+              { id: 3, type: '慢病管理', date: '2024-10-05', employeeName: '王医生', employeeDepartment: '内科', status: 1 }
+            ]
+        }
+      } catch (e) {
+        console.warn('获取服务记录失败，使用默认数据', e)
+        // 提供默认服务记录数据，确保UI显示正常
+        serviceRecords.value = [
+            { id: 1, type: '健康体检', date: '2024-10-15', employeeName: '张医生', employeeDepartment: '体检科', status: 1 },
+            { id: 2, type: '上门问诊', date: '2024-10-10', employeeName: '李护士', employeeDepartment: '社区医疗', status: 1 },
+            { id: 3, type: '慢病管理', date: '2024-10-05', employeeName: '王医生', employeeDepartment: '内科', status: 1 }
+          ]
       }
+    } finally {
+      // 无论成功失败，都关闭加载提示
+      setTimeout(() => {
+        loadingInstance.close()
+      }, 300)
     }
-    
-    try {
-      const serviceRecordsRes = await api.user.getServiceRecords()
-      // 适配新的API返回格式（code: 1）
-      if (serviceRecordsRes && serviceRecordsRes.code === 1) {
-        serviceRecords.value = serviceRecordsRes.data || []
-      }
-    } catch (e) {
-      console.warn('获取服务记录失败，使用默认数据', e)
-      // 提供默认服务记录数据
-      serviceRecords.value = []
-    }
-    
-    // 加载推荐商品数据
-    // const productsRes = await api.mall.getRecommendedProducts()
-    // if (productsRes.code === 200) {
-    //   recommendedProducts.value = productsRes.data
-    // }
-  } catch (error) {
-    console.error('加载数据出错', error)
-    // 不再显示错误提示，因为主要功能（显示用户名）已经实现
-  } finally {
-    loading.value = false
   }
-}
 
 // 跳转到AI健康咨询
 const goToAIConsult = () => {
@@ -402,9 +598,94 @@ const getStatusType = (status) => {
   }
 }
 
-// 显示信息详情
+// 显示信息详情对话框
 const showInfoDetail = () => {
-  ElMessage('查看详细信息功能开发中')
+  detailDialogVisible.value = true
+}
+
+// 显示编辑对话框
+const showEditDialog = () => {
+  // 填充表单数据
+  editForm.name = userInfo.value?.name || ''
+  editForm.age = userInfo.value?.age || 0
+  editForm.gender = userInfo.value?.gender || ''
+  editForm.phone = userInfo.value?.phone || ''
+  editForm.email = userInfo.value?.email || ''
+  
+  // 显示对话框
+  editDialogVisible.value = true
+}
+
+// 更新用户信息
+  const handleUpdateInfo = async () => {
+    await editFormRef.value.validate(async (valid) => {
+      if (valid) {
+        // 显示加载状态
+        const loadingInstance = ElLoading.service({
+          lock: true,
+          text: '保存中...',
+          background: 'rgba(0, 0, 0, 0.7)'
+        })
+        
+        try {
+          // 准备更新数据
+          const updateData = {
+            id: userInfo.value?.id,
+            name: editForm.name,
+            age: editForm.age,
+            gender: editForm.gender,
+            phone: editForm.phone,
+            email: editForm.email
+          }
+          
+          // 调用API更新用户信息
+          const response = await api.user.updateUser(updateData)
+          
+          // 确保响应格式符合预期
+          if (response && response.code === 1) {
+            // 更新成功，更新本地数据
+            userInfo.value = {
+              ...userInfo.value,
+              ...updateData
+            }
+            
+            // 更新localStorage
+            localStorage.setItem('userInfo', JSON.stringify(userInfo.value))
+            localStorage.setItem('userId', userInfo.value.id)
+            
+            ElMessage.success('个人信息更新成功')
+            editDialogVisible.value = false
+          } else {
+            // 处理非预期的响应格式
+            const errorMsg = response && response.msg ? response.msg : '未知错误'
+            ElMessage.error('更新失败：' + errorMsg)
+          }
+        } catch (error) {
+          console.error('更新用户信息失败', error)
+          ElMessage.error('更新失败，请检查网络连接')
+        } finally {
+          // 无论成功失败，都关闭加载提示
+          setTimeout(() => {
+            loadingInstance.close()
+          }, 300)
+        }
+      }
+    })
+  }
+
+// 格式化日期时间
+const formatDateTime = (dateTime) => {
+  if (!dateTime) return '-'
+  const date = new Date(dateTime)
+  if (isNaN(date.getTime())) return '-'
+  
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  const hours = String(date.getHours()).padStart(2, '0')
+  const minutes = String(date.getMinutes()).padStart(2, '0')
+  
+  return `${year}-${month}-${day} ${hours}:${minutes}`
 }
 
 // 显示血压详情
@@ -432,45 +713,48 @@ const showAllServices = () => {
 .user-home {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 15px;
+  padding: 0 var(--spacing-md);
 }
 
 /* 欢迎区域 */
 .welcome-section {
-  margin-bottom: 30px;
+  margin-bottom: var(--spacing-xl);
   text-align: center;
-  padding: 30px 0;
-  background: linear-gradient(135deg, #f0f9ff 0%, #e6f7ff 100%);
-  border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  padding: var(--spacing-xl) 0;
+  background: linear-gradient(135deg, var(--primary-color-light) 0%, var(--primary-color-light-extra) 100%);
+  border-radius: var(--border-radius-base);
+  box-shadow: var(--shadow-base);
+  animation: fadeInUp 0.6s ease-out;
 }
 
 .welcome-section h1 {
-  font-size: 32px;
-  color: #333;
-  margin-bottom: 10px;
+  font-size: 2.2rem;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-sm);
   font-weight: 600;
 }
 
 .welcome-section p {
-  font-size: 16px;
-  color: #666;
+  font-size: 1rem;
+  color: var(--text-secondary);
   margin: 0;
 }
 
 /* 快捷功能入口 */
 .quick-access-section {
-  margin-bottom: 40px;
+  margin-bottom: var(--spacing-xl);
 }
 
 .quick-card {
   transition: all 0.3s ease;
   height: 100%;
+  border: 1px solid var(--border-light);
 }
 
 .quick-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-light);
+  border-color: var(--primary-color);
 }
 
 .quick-card-content {
@@ -478,57 +762,79 @@ const showAllServices = () => {
   flex-direction: column;
   align-items: center;
   text-align: center;
+  padding: var(--spacing-md) 0;
 }
 
 .quick-card-icon {
-  width: 60px;
-  height: 60px;
+  width: 70px;
+  height: 70px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 15px;
-  font-size: 28px;
+  margin-bottom: var(--spacing-md);
+  font-size: 2rem;
+  transition: all 0.3s ease;
 }
 
 .health-icon {
-  background-color: #e6f7ff;
-  color: #1890ff;
+  background-color: var(--primary-color-light);
+  color: var(--primary-color);
+}
+
+.quick-card:hover .health-icon {
+  background-color: var(--primary-color);
+  color: white;
 }
 
 .mall-icon {
-  background-color: #f6ffed;
-  color: #52c41a;
+  background-color: var(--success-color-light);
+  color: var(--success-color);
+}
+
+.quick-card:hover .mall-icon {
+  background-color: var(--success-color);
+  color: white;
 }
 
 .service-icon {
-  background-color: #fff7e6;
-  color: #fa8c16;
+  background-color: var(--warning-color-light);
+  color: var(--warning-color);
+}
+
+.quick-card:hover .service-icon {
+  background-color: var(--warning-color);
+  color: white;
 }
 
 .record-icon {
-  background-color: #f9f0ff;
-  color: #722ed1;
+  background-color: var(--info-color-light);
+  color: var(--info-color);
+}
+
+.quick-card:hover .record-icon {
+  background-color: var(--info-color);
+  color: white;
 }
 
 .quick-card-title {
-  font-size: 18px;
+  font-size: 1.1rem;
   font-weight: 600;
-  color: #333;
-  margin-bottom: 5px;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-xs);
 }
 
 .quick-card-desc {
-  font-size: 14px;
-  color: #666;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
   margin: 0;
 }
 
 /* 主要内容区域 */
 .main-content {
   display: flex;
-  gap: 30px;
-  margin-bottom: 40px;
+  gap: var(--spacing-xl);
+  margin-bottom: var(--spacing-xl);
 }
 
 .left-panel {
@@ -540,128 +846,212 @@ const showAllServices = () => {
 }
 
 .section-title {
-  font-size: 20px;
+  font-size: 1.2rem;
   font-weight: 600;
-  color: #333;
-  margin-bottom: 20px;
-  padding-bottom: 10px;
-  border-bottom: 2px solid #f0f0f0;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-md);
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--primary-color-light);
 }
 
 /* 基础信息卡片 */
 .info-card {
-  margin-bottom: 30px;
+  margin-bottom: var(--spacing-lg);
+  border: 1px solid var(--border-light);
 }
 
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 16px;
-  font-weight: bold;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  padding: var(--spacing-md) var(--spacing-md) var(--spacing-sm);
+}
+
+.card-actions {
+  display: flex;
+  gap: var(--spacing-sm);
 }
 
 .basic-info-content {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
+  gap: var(--spacing-md);
+  padding: 0 var(--spacing-md) var(--spacing-md);
+}
+
+/* 用户详情对话框样式 */
+.user-detail-content {
+  padding: var(--spacing-sm) 0;
+}
+
+.detail-section {
+  margin-bottom: var(--spacing-lg);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.detail-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.section-subtitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-md);
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detail-label {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.detail-value {
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  font-weight: 500;
 }
 
 .info-item {
   display: flex;
   justify-content: space-between;
-  padding: 10px 0;
-  border-bottom: 1px solid #f0f0f0;
+  padding: var(--spacing-sm) 0;
+  border-bottom: 1px solid var(--border-extra-light);
+  transition: all 0.2s ease;
+}
+
+.info-item:hover {
+  background-color: var(--bg-color);
+  padding-left: var(--spacing-xs);
+  border-left: 3px solid var(--primary-color);
 }
 
 .info-label {
-  font-size: 14px;
-  color: #666;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
 }
 
 .info-value {
-  font-size: 14px;
-  color: #333;
+  font-size: 0.9rem;
+  color: var(--text-primary);
   font-weight: 500;
 }
 
 /* 健康数据区域 */
 .health-section {
-  margin-bottom: 30px;
+  margin-bottom: var(--spacing-lg);
 }
 
 .health-indicators {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
+  gap: var(--spacing-md);
 }
 
 .indicator-card {
   text-align: center;
   height: 100%;
+  border: 1px solid var(--border-light);
+  transition: all 0.3s ease;
+}
+
+.indicator-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-light);
+  border-color: var(--primary-color);
 }
 
 .indicator-content {
-  padding: 20px 0;
+  padding: var(--spacing-md) 0;
 }
 
 .latest-value {
-  font-size: 36px;
+  font-size: 2.2rem;
   font-weight: bold;
-  color: #1890ff;
-  margin-bottom: 10px;
+  color: var(--primary-color);
+  margin-bottom: var(--spacing-xs);
+  transition: color 0.3s ease;
+}
+
+.indicator-card:hover .latest-value {
+  color: #66b1ff; /* 主色调的亮色变体 */
 }
 
 .unit {
-  font-size: 16px;
-  color: #666;
-  margin-bottom: 15px;
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-sm);
 }
 
 .measure-time {
-  font-size: 14px;
-  color: #999;
+  font-size: 0.85rem;
+  color: var(--text-placeholder);
 }
 
 /* 商城推荐区域 */
 .mall-section {
-  margin-bottom: 30px;
+  margin-bottom: var(--spacing-lg);
 }
 
 .mall-products {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: var(--spacing-md);
 }
 
 .product-item {
   display: flex;
   align-items: center;
-  padding: 15px;
-  background-color: #fafafa;
-  border-radius: 8px;
+  padding: var(--spacing-md);
+  background-color: var(--bg-color-light);
+  border-radius: var(--border-radius-base);
   transition: all 0.3s;
   cursor: pointer;
   position: relative;
+  border: 1px solid var(--border-light);
 }
 
 .product-item:hover {
-  background-color: #f0f9ff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background-color: var(--primary-color-light-extra);
+  box-shadow: var(--shadow-base);
+  border-color: var(--primary-color);
 }
 
 .product-image {
-  width: 60px;
-  height: 60px;
-  margin-right: 15px;
+  width: 70px;
+  height: 70px;
+  margin-right: var(--spacing-md);
   flex-shrink: 0;
+  border-radius: var(--border-radius-small);
+  overflow: hidden;
 }
 
 .product-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 4px;
+  transition: transform 0.3s ease;
+}
+
+.product-item:hover .product-image img {
+  transform: scale(1.05);
 }
 
 .product-info {
@@ -669,64 +1059,90 @@ const showAllServices = () => {
 }
 
 .product-name {
-  font-size: 14px;
+  font-size: 0.95rem;
   font-weight: 500;
-  color: #333;
-  margin-bottom: 5px;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-xs);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .product-price {
-  font-size: 16px;
+  font-size: 1.1rem;
   font-weight: bold;
-  color: #ff4d4f;
+  color: var(--danger-color);
 }
 
 .add-cart-btn {
   position: absolute;
-  right: 15px;
+  right: var(--spacing-md);
+  transition: all 0.3s ease;
+}
+
+.add-cart-btn:hover {
+  transform: translateY(-2px);
 }
 
 .view-more,
 .view-all {
   text-align: center;
-  margin-top: 15px;
+  margin-top: var(--spacing-md);
+}
+
+.view-more .el-button,
+.view-all .el-button {
+  color: var(--primary-color);
+  font-weight: 500;
+}
+
+.view-more .el-button:hover,
+.view-all .el-button:hover {
+  color: #66b1ff;
+  text-decoration: underline;
 }
 
 /* 服务记录区域 */
 .service-section {
-  margin-bottom: 30px;
+  margin-bottom: var(--spacing-lg);
 }
 
 .service-card {
   height: 100%;
+  border: 1px solid var(--border-light);
 }
 
 .service-content {
   display: flex;
   flex-direction: column;
   min-height: 200px;
+  padding: var(--spacing-md);
 }
 
 .service-list {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: var(--spacing-md);
   flex: 1;
+  margin-bottom: var(--spacing-md);
 }
 
 .service-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px;
-  background-color: #fafafa;
-  border-radius: 8px;
+  padding: var(--spacing-md);
+  background-color: var(--bg-color-light);
+  border-radius: var(--border-radius-base);
   transition: all 0.3s;
+  border: 1px solid var(--border-light);
 }
 
 .service-item:hover {
-  background-color: #f0f9ff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background-color: var(--primary-color-light-extra);
+  box-shadow: var(--shadow-base);
+  border-color: var(--primary-color);
+  transform: translateY(-2px);
 }
 
 .service-info {
@@ -734,25 +1150,51 @@ const showAllServices = () => {
 }
 
 .service-type {
-  font-size: 14px;
+  font-size: 0.95rem;
   font-weight: 500;
-  color: #333;
-  margin-bottom: 5px;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-xs);
 }
 
 .service-date,
 .service-person {
-  font-size: 12px;
-  color: #666;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
   margin-bottom: 3px;
 }
 
 .service-status {
-  margin-left: 10px;
+  margin-left: var(--spacing-md);
 }
 
-/* 响应式设计 */
-@media (max-width: 1024px) {
+/* 动画效果 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 响应式设计 - 大屏优化 */
+@media (min-width: 1200px) {
+  .user-home {
+    padding: 0 var(--spacing-lg);
+  }
+}
+
+/* 中屏（平板横屏） */
+@media (max-width: 1199px) and (min-width: 992px) {
+  .health-indicators {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* 小屏（平板竖屏） */
+@media (max-width: 991px) and (min-width: 768px) {
   .main-content {
     flex-direction: column;
   }
@@ -767,17 +1209,24 @@ const showAllServices = () => {
   }
 }
 
-@media (max-width: 768px) {
+/* 超小屏（手机） */
+@media (max-width: 767px) {
   .user-home {
-    padding: 0 10px;
+    padding: 0 var(--spacing-sm);
   }
   
   .welcome-section h1 {
-    font-size: 24px;
+    font-size: 1.8rem;
   }
   
   .quick-access-section .el-col {
-    margin-bottom: 15px;
+    margin-bottom: var(--spacing-md);
+  }
+  
+  .quick-card-icon {
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
   }
   
   .basic-info-content {
@@ -788,25 +1237,89 @@ const showAllServices = () => {
     grid-template-columns: 1fr;
   }
   
+  .indicator-content .latest-value {
+    font-size: 1.8rem;
+  }
+  
   .product-item {
     flex-direction: column;
     align-items: flex-start;
-    gap: 10px;
+    gap: var(--spacing-sm);
+  }
+  
+  .product-image {
+    width: 100px;
+    height: 100px;
+    margin-right: 0;
+    margin-bottom: var(--spacing-sm);
   }
   
   .add-cart-btn {
     position: static;
     width: 100%;
+    margin-top: var(--spacing-sm);
   }
   
   .service-item {
     flex-direction: column;
     align-items: flex-start;
-    gap: 10px;
+    gap: var(--spacing-sm);
   }
   
   .service-status {
     margin-left: 0;
+    margin-top: var(--spacing-xs);
+  }
+  
+  .card-actions {
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+  
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 极小型屏幕 */
+@media (max-width: 360px) {
+  .user-home {
+    padding: 0 var(--spacing-xs);
+  }
+  
+  .welcome-section {
+    padding: var(--spacing-lg) 0;
+  }
+  
+  .welcome-section h1 {
+    font-size: 1.6rem;
+  }
+  
+  .quick-card-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 1.3rem;
+  }
+  
+  .indicator-content .latest-value {
+    font-size: 1.5rem;
+  }
+}
+
+/* 加载状态样式 */
+.loading-skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: var(--border-radius-base);
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
   }
 }
 </style>
