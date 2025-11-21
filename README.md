@@ -1,4 +1,5 @@
-# .
+# health-service-platform
+健康服务平台前端代码静态托管
 
 This template should help get you started developing with Vue 3 in Vite.
 
