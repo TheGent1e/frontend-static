@@ -1,0 +1,115 @@
+:root {
+  /* 主色调 - 科技蓝 */
+  --primary-color: #165DFF;
+  --primary-light: #4080FF;
+  --primary-dark: #0E42D2;
+  --primary-hover: #0E42D2;
+  --primary-active: #002379;
+  
+  /* 辅助色 */
+  --success-color: #00B42A;
+  --warning-color: #FF7D00;
+  --error-color: #F53F3F;
+  --info-color: #86909C;
+  
+  /* 功能色 */
+  --success-light: #F0F9FF;
+  --warning-light: #FFF7E6;
+  --error-light: #FFF2F0;
+  --info-light: #F2F3F5;
+  
+  /* 文字颜色 */
+  --text-primary: #1D2129;
+  --text-regular: #4E5969;
+  --text-secondary: #86909C;
+  --text-placeholder: #C9CDD4;
+  --text-disabled: #C9CDD4;
+  
+  /* 背景颜色 */
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F7F8FA;
+  --bg-tertiary: #F2F3F5;
+  --bg-disabled: #F2F3F5;
+  --bg-hover: #F2F3F5;
+  
+  /* 边框颜色 */
+  --border-primary: #E5E6EB;
+  --border-secondary: #C9CDD4;
+  --border-tertiary: #F2F3F5;
+  --border-disabled: #F2F3F5;
+  
+  /* 阴影 */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 2px 8px 0 rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 4px 16px 0 rgba(0, 0, 0, 0.12);
+  --shadow-xl: 0 8px 32px 0 rgba(0, 0, 0, 0.16);
+  --shadow-inset: inset 0 2px 4px 0 rgba(0, 0, 0, 0.05);
+  
+  /* 尺寸变量 */
+  --size-xs: 4px;
+  --size-sm: 8px;
+  --size-base: 16px;
+  --size-md: 24px;
+  --size-lg: 32px;
+  --size-xl: 40px;
+  
+  /* 间距 */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-base: 16px;
+  --space-md: 24px;
+  --space-lg: 32px;
+  --space-xl: 40px;
+  --space-2xl: 48px;
+  
+  /* 圆角 */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-base: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+  
+  /* 字体 */
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-base: 16px;
+  --font-size-md: 18px;
+  --font-size-lg: 20px;
+  --font-size-xl: 24px;
+  --font-size-2xl: 30px;
+  
+  /* 行高 */
+  --line-height-xs: 1.2;
+  --line-height-sm: 1.3;
+  --line-height-base: 1.5;
+  --line-height-md: 1.6;
+  --line-height-lg: 1.8;
+  
+  /* 过渡动画 */
+  --transition-fast: 0.1s ease;
+  --transition-base: 0.2s ease;
+  --transition-slow: 0.3s ease;
+  
+  /* 商城特定变量 */
+  --mall-gradient-primary: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+  --mall-gradient-secondary: linear-gradient(135deg, #E8F3FF 0%, #FFFFFF 100%);
+  --mall-gradient-tertiary: linear-gradient(135deg, #F7F8FA 0%, #FFFFFF 100%);
+  --mall-text-price: #F53F3F;
+  --mall-text-original-price: #86909C;
+  --mall-tag-new: #00B42A;
+  --mall-tag-hot: #F53F3F;
+  --mall-tag-discount: #FF7D00;
+  
+  /* 交互状态 */
+  --hover-opacity: 0.9;
+  --active-opacity: 0.8;
+  --disabled-opacity: 0.6;
+}
+
+/* 深色模式预留 */
+[data-theme="dark"] {
+  /* 深色模式变量将在后续实现 */
+}
