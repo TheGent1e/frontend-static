@@ -33,7 +33,7 @@
       <div class="health-overview">
         <div class="overview-item" :class="{'hover-scale': true}">
           <div class="overview-icon blood-pressure-icon">
-            <el-icon class="icon-inner"><Scale /></el-icon>
+            <el-icon class="icon-inner"><Operation /></el-icon>
           </div>
           <div class="overview-content">
             <div class="overview-title">血压</div>
@@ -251,7 +251,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox, ElLoading } from 'element-plus'
-import { Scale, Cpu, Heart, Plus } from '@element-plus/icons-vue'
+import { Operation, Cpu, Heart, Plus } from '@element-plus/icons-vue'
 
 const router = useRouter()
 
