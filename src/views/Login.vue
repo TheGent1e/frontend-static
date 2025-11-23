@@ -544,19 +544,19 @@ const clearRememberedPassword = () => {
 
 /* 针对 Element Plus 原生样式的深度穿透增强（确保万无一失） */
 :deep(.login-form .login-form-item.el-form-item .el-form-item__label) {
-  display: block !important;
-  text-align: center !important;
-  margin-top: 10px !important;
-  width: 100% !important;
-  max-width: 60px !important;
-  color: var(--text-secondary) !important;
-  font-size: 16px !important;
-  font-weight: 500 !important;
-  line-height: 24px !important;
-  padding: 0 !important;
-  height: auto !important;
-  flex: none !important;
-  align-items: center !important;
+  display: block;
+  text-align: center ;
+  margin-top: 10px ;
+  width: 100%t;
+  max-width: 60px ;
+  color: var(--text-secondary) ;
+  font-size: 16px ;
+  font-weight: 500 ;
+  line-height: 24px ;
+  padding: 0 ;
+  height: auto ;
+  flex: none ;
+  align-items: center ;
 }
 
 .login-form {

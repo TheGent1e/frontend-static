@@ -1,0 +1,102 @@
+:root {
+  /* 浅色模式 - 健康服务平台专用配色方案 */
+  /* 基于现代UI设计原则，为老年人用户优化的高对比度浅色主题 */
+  
+  /* 主色调 - 健康绿 */
+  --primary-color: #4CAF50;
+  --primary-light: #81C784;
+  --primary-dark: #388E3C;
+  --primary-hover: #388E3C;
+  --primary-active: #2E7D32;
+
+  /* 辅助色 */
+  --success-color: #66BB6A;
+  --success-hover: #4CAF50;
+  --warning-color: #FFA726;
+  --error-color: #EF5350;
+  --danger-color: #EF5350;
+  --info-color: #78909C;
+
+  /* 功能色 */
+  --success-light: #E8F5E9;
+  --warning-light: #FFF8E1;
+  --error-light: #FFEBEE;
+  --info-light: #F0F7FF;
+
+  /* 文字颜色 */
+  --text-primary: #2E3A46;
+  --text-regular: #5A6978;
+  --text-secondary: #8492A6;
+  --text-placeholder: #B0B8C1;
+  --text-disabled: #B0B8C1;
+
+  /* 背景颜色 - 健康主题色调 */
+  --bg-primary: #F1F8E9;
+  /* 浅黄绿色调，符合健康主题 */
+  --bg-secondary: #F8FAFC;
+  --bg-tertiary: #F1F5F9;
+  --bg-disabled: #F1F5F9;
+  --bg-hover: #E8F5E9;
+  /* 更明显的浅绿色悬停背景 */
+  --hover-color: var(--bg-tertiary);
+  /* 与主题保持一致 */
+  --bg-color-page: var(--bg-primary);
+  
+  /* 边框颜色 */
+  --border-primary: #E2E8F0;
+  --border-secondary: #CBD5E1;
+  --border-tertiary: #F1F5F9;
+  --border-disabled: #F1F5F9;
+
+  /* 阴影 */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 2px 8px 0 rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 4px 16px 0 rgba(0, 0, 0, 0.12);
+  --shadow-xl: 0 8px 32px 0 rgba(0, 0, 0, 0.16);
+  --shadow-inset: inset 0 2px 4px 0 rgba(0, 0, 0, 0.05);
+
+  /* 统一的主题渐变和标签颜色 - 浅色模式 */
+  --gradient-primary: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+  --gradient-secondary: linear-gradient(135deg, rgba(129, 199, 132, 0.2) 0%, rgba(102, 187, 106, 0.1) 100%);
+  --gradient-tertiary: linear-gradient(135deg, rgba(102, 187, 106, 0.15) 0%, rgba(76, 175, 80, 0.05) 100%);
+  --text-price: #FF8A65;
+  --text-original-price: #9E9E9E;
+  --tag-new: var(--success-color);
+  --tag-hot: var(--error-color);
+  --tag-discount: var(--warning-color);
+
+  /* 健康主题特定变量 - 浅色模式 */
+  --health-card-shadow: 0 4px 12px rgba(76, 175, 80, 0.1);
+  --health-card-hover: 0 6px 16px rgba(76, 175, 80, 0.15);
+  --health-accent-teal: #4DB6AC;
+  --health-accent-blue: #64B5F6;
+  --health-accent-rose: #F48FB1;
+  --health-accent-amber: #FFCC80;
+  --health-gradient-wellness: linear-gradient(135deg, rgba(165, 214, 167, 0.8) 0%, rgba(129, 199, 132, 0.9) 100%);
+  --health-gradient-wellness-secondary: linear-gradient(135deg, rgba(179, 229, 252, 0.8) 0%, rgba(129, 212, 250, 0.9) 100%);
+
+  /* Element Plus 组件库特定变量适配 */
+  --el-color-primary: #4CAF50;
+  --el-color-primary-light-3: #81C784;
+  --el-color-primary-light-5: #A5D6A7;
+  --el-color-primary-light-7: #C8E6C9;
+  --el-color-primary-light-9: #E8F5E9;
+  --el-text-color-primary: #2E3A46;
+  --el-text-color-regular: #5A6978;
+  --el-text-color-secondary: #8492A6;
+  --el-text-color-placeholder: #B0B8C1;
+  --el-bg-color: #F8FAFC;
+  --el-bg-color-page: #F1F8E9;
+  --el-bg-color-overlay: #FFFFFF;
+  --el-border-color: #E2E8F0;
+  --el-border-color-light: #F1F5F9;
+  --el-input-bg: #FFFFFF;
+  --el-input-hover-bg: #FFFFFF;
+  --el-border-color-hover: #4CAF50;
+}
+
+/* 浅色模式特定样式优化 */
+[data-theme="light"] {
+  /* 继承:root中的所有变量，这里可以添加特定于浅色模式的覆盖 */
+  /* 确保与:root中的浅色模式变量保持一致 */
+}

@@ -13,7 +13,6 @@
     <div class="action-buttons">
       <el-button 
         type="primary" 
-        icon="el-icon-arrow-left" 
         @click="goBack"
         class="back-button"
       >
@@ -377,7 +376,10 @@ onMounted(() => {
 
 .header-desc {
   font-size: var(--font-size-base);
-  color: var(--text-secondary);
+  /* 提高颜色对比度以符合WCAG标准（至少4.5:1） */
+  color: var(--text-primary);
+  /* 增加文本粗细以提高可读性 */
+  font-weight: 500;
   line-height: var(--line-height-base);
   position: relative;
   z-index: 1;
@@ -394,16 +396,18 @@ onMounted(() => {
 }
 
 .back-button {
-  background-color: var(--bg-tertiary);
-  border-color: var(--border-secondary);
-  color: var(--text-primary);
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  color: white;
   transition: all var(--transition-base);
 }
 
 .back-button:hover {
-  background-color: var(--bg-secondary) !important;
-  border-color: var(--primary-color) !important;
-  color: var(--primary-color) !important;
+  background-color: var(--primary-hover) !important;
+  border-color: var(--primary-hover) !important;
+  color: white !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
 }
 
 .cart-button {

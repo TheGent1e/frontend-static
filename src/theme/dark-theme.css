@@ -1,0 +1,209 @@
+:root {
+  /* 深色模式 - 健康服务平台专用配色方案 */
+  /* 基于现代UI设计原则，为老年人用户优化的高对比度深色主题 */
+}
+
+/* 深色模式配置 */
+[data-theme="dark"] {
+  /* 主色调 - 保持健康绿特色，但在深色背景上更醒目 */
+  --primary-color: #0f172a;
+  --primary-light: #65acee;
+  --primary-dark: #1f266b;
+  --primary-hover: #5e53c0;
+  --primary-active: #620ea7;
+
+  /* 辅助色 - 确保在深色背景上有足够对比度 */
+  --success-color: #81C784;
+  --success-hover: #66BB6A;
+  --warning-color: #FFB74D;
+  --error-color: #EF5350;
+  --danger-color: #EF5350;
+  --info-color: #81C784;
+
+  /* 功能色 - 调整为深色背景下的变体 */
+  --success-light: rgba(129, 199, 132, 0.15);
+  --warning-light: rgba(255, 183, 77, 0.15);
+  --error-light: rgba(239, 83, 80, 0.15);
+  --info-light: rgba(129, 199, 132, 0.15);
+
+  /* 文字颜色 - 浅色文字确保在深色背景上的可读性 */
+  --text-primary: #E0E0E0;
+  --text-regular: #BDBDBD;
+  --text-secondary: #9E9E9E;
+  --text-placeholder: #757575;
+  --text-disabled: #616161;
+
+  /* 背景颜色 - 深色调确保长时间使用不易疲劳 */
+  --bg-primary: #1A1A1A;
+  --bg-secondary: #212121;
+  --bg-tertiary: #263238;
+  --bg-disabled: #37474F;
+  --bg-hover: #37474F;
+  --hover-color: var(--bg-tertiary);
+  --bg-color-page: var(--bg-primary);
+
+  /* 边框颜色 - 深色背景下的边框需要更加微妙 */
+  --border-primary: #455A64;
+  --border-secondary: #37474F;
+  --border-tertiary: #263238;
+  --border-disabled: #37474F;
+
+  /* 阴影 - 深色模式下的阴影需要更柔和 */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 2px 8px 0 rgba(0, 0, 0, 0.25);
+  --shadow-lg: 0 4px 16px 0 rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+  --shadow-inset: inset 0 2px 4px 0 rgba(0, 0, 0, 0.3);
+
+  /* 统一的主题渐变和标签颜色 - 深色模式 */
+  --gradient-primary: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+  --gradient-secondary: linear-gradient(135deg, rgba(129, 199, 132, 0.2) 0%, rgba(102, 187, 106, 0.1) 100%);
+  --gradient-tertiary: linear-gradient(135deg, rgba(102, 187, 106, 0.15) 0%, rgba(76, 175, 80, 0.05) 100%);
+  --text-price: #FF8A65;
+  --text-original-price: #9E9E9E;
+  --tag-new: var(--success-color);
+  --tag-hot: var(--error-color);
+  --tag-discount: var(--warning-color);
+
+  /* 健康主题特定变量 - 深色模式变体 */
+  --health-card-shadow: 0 4px 12px rgba(102, 187, 106, 0.1);
+  --health-card-hover: 0 6px 16px rgba(102, 187, 106, 0.15);
+  --health-accent-teal: #4DB6AC;
+  --health-accent-blue: #64B5F6;
+  --health-accent-rose: #F48FB1;
+  --health-accent-amber: #FFCC80;
+  --health-gradient-wellness: linear-gradient(135deg, rgba(165, 214, 167, 0.8) 0%, rgba(129, 199, 132, 0.9) 100%);
+  --health-gradient-wellness-secondary: linear-gradient(135deg, rgba(179, 229, 252, 0.8) 0%, rgba(129, 212, 250, 0.9) 100%);
+
+  /* Element Plus 组件库特定变量适配 */
+  --el-color-primary: #66BB6A;
+  --el-color-primary-light-3: #38bdf8;
+  --el-color-primary-light-5: #A5D6A7;
+  --el-color-primary-light-7: #C8E6C9;
+  --el-color-primary-light-9: #E8F5E9;
+  --el-text-color-primary: #E0E0E0;
+  --el-text-color-regular: #BDBDBD;
+  --el-text-color-secondary: #9E9E9E;
+  --el-text-color-placeholder: #757575;
+  --el-bg-color: #1A1A1A;
+  --el-bg-color-page: #121212;
+  --el-bg-color-overlay: #212121;
+  --el-border-color: #455A64;
+  --el-border-color-light: #37474F;
+  --el-input-bg: #263238;
+  --el-input-hover-bg: #37474F;
+  --el-border-color-hover: #66BB6A;
+
+  /* 科技感元素特殊样式 */
+  --glow-blue: 0 0 10px rgba(14, 165, 233, 0.2);
+  --glow-green: 0 0 10px rgba(102, 187, 106, 0.2);
+}
+
+/* 深色模式下的滚动条样式 */
+[data-theme="dark"] ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-track {
+  background: var(--border-primary);
+  border-radius: var(--radius-sm);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: var(--text-secondary);
+  border-radius: var(--radius-sm);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: var(--text-regular);
+}
+
+/* 深色模式下的加载覆盖层 */
+[data-theme="dark"] .loading-overlay {
+  background: rgba(26, 26, 26, 0.85);
+}
+
+/* 深色模式下的卡片悬浮效果优化 */
+[data-theme="dark"] .card:hover {
+  box-shadow: var(--health-card-hover);
+  border-color: var(--primary-light);
+}
+
+/* 深色模式下的按钮样式增强 */
+[data-theme="dark"] .el-button--primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  color: #FFFFFF;
+}
+
+[data-theme="dark"] .el-button--primary:hover {
+  background-color: var(--primary-light);
+  border-color: var(--primary-light);
+}
+
+/* 深色模式下的表格样式优化 */
+[data-theme="dark"] .el-table {
+  background-color: var(--bg-secondary);
+}
+
+[data-theme="dark"] .el-table th {
+  background-color: var(--bg-tertiary);
+  border-bottom-color: var(--border-primary);
+}
+
+[data-theme="dark"] .el-table td {
+  border-bottom-color: var(--border-secondary);
+}
+
+/* 深色模式下的表单样式优化 */
+[data-theme="dark"] .el-form-item__label {
+  color: var(--text-regular);
+}
+
+/* 深色模式下的对话框样式优化 */
+[data-theme="dark"] .el-dialog {
+  background-color: var(--bg-secondary);
+  border-color: var(--border-primary);
+}
+
+[data-theme="dark"] .el-dialog__header {
+  border-bottom-color: var(--border-secondary);
+}
+
+[data-theme="dark"] .el-dialog__footer {
+  border-top-color: var(--border-secondary);
+}
+
+/* 确保老年人阅读体验的特殊优化 */
+[data-theme="dark"] {
+  /* 提高关键文本的对比度 */
+  --text-primary: #FFFFFF;
+  /* 主文本使用白色提高对比度 */
+  --text-regular: #F5F5F5;
+  /* 常规文本使用近白色 */
+
+  /* 关键操作按钮增强 */
+  --primary-color: #0581c0;
+  /* 保持明亮的绿色作为主要操作色 */
+
+  /* 警告和错误信息更醒目 */
+  --warning-color: #FFCC80;
+  --error-color: #EF5350;
+}
+
+/* 针对视力衰退老年人的辅助样式 */
+@media (prefers-contrast: high) {
+  [data-theme="dark"] {
+    /* 进一步提高对比度 */
+    --text-primary: #FFFFFF;
+    --text-regular: #FFFFFF;
+    --border-primary: #FFFFFF;
+    --border-secondary: #BDBDBD;
+  }
+}
+
+/* 动画过渡效果 */
+.theme-transition {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}

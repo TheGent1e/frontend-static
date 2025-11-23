@@ -3,7 +3,7 @@
     <div class="error-code">404</div>
     <h2>页面不存在</h2>
     <p>抱歉，您访问的页面不存在或已被删除</p>
-    <el-button type="primary" @click="goHome">返回首页</el-button>
+    <el-button type="primary" @click="goHome" class="home-button">返回首页</el-button>
   </div>
 </template>
 
@@ -76,5 +76,25 @@ const goHome = () => {
   .not-found p {
     font-size: 14px;
   }
+}
+
+/* 返回首页按钮样式 */
+.home-button {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.home-button:hover {
+  background-color: var(--primary-hover) !important;
+  border-color: var(--primary-hover) !important;
+  color: white !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
 }
 </style>

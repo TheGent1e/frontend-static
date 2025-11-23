@@ -4,7 +4,7 @@
     <div class="page-header">
       <div style="display: flex; align-items: center; gap: 15px;">
         <el-button 
-          type="text" 
+          type="primary" 
           class="back-home-btn"
           size="large"
           @click="navigateToHome"
@@ -468,40 +468,21 @@ onMounted(() => {
 
 /* 返回首页按钮样式 */
 .back-home-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: linear-gradient(135deg, #0ea5e9, #38bdf8);
-  border: 2px solid #0ea5e9;
-  border-radius: 24px;
+  background-color: var(--primary-color);
   color: white;
-  font-size: 17px;
-  font-weight: 700;
-  padding: 12px 24px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 6px 20px rgba(14, 165, 233, 0.3);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  cursor: pointer;
+  border-color: var(--primary-color);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
 }
 
 .back-home-btn:hover {
-  background: linear-gradient(135deg, #0284c7, #0ea5e9);
-  color: white;
-  transform: translateY(-2px) scale(1.03);
-  box-shadow: 0 8px 25px rgba(14, 165, 233, 0.4);
-  border-color: #0284c7;
-}
-
-.back-home-btn:active {
-  transform: translateY(0);
-  box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
-}
-
-.back-home-btn .el-icon {
-  margin-right: 6px;
-  font-size: 20px;
-  animation: pulse 2s infinite;
+  background-color: var(--primary-hover) !important;
+  border-color: var(--primary-hover) !important;
+  color: white !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
 }
 
 @keyframes pulse {
