@@ -392,16 +392,31 @@ const getSpecsText = (specs) => {
 
 <style scoped>
 .shopping-cart {
-  min-height: calc(100vh - var(--header-height));
-  background-color: var(--bg-color-page);
-  padding: var(--spacing-lg) 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  min-height: calc(100vh - var(--header-height, 0));
+  background-color: var(--bg-primary); /* 使用统一的健康主题背景色 */
+  padding: var(--space-lg, 24px) 0;
+  font-family: var(--font-family); /* 使用主题中的字体变量 */
+  position: relative;
+}
+
+/* 医疗风格装饰元素 */
+.shopping-cart::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--mall-primary-gradient);
+  opacity: 0.8;
 }
 
 .cart-container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 var(--spacing-lg);
+  position: relative;
+  z-index: 1;
 }
 
 .cart-header {
@@ -410,13 +425,25 @@ const getSpecsText = (specs) => {
   align-items: center;
   margin-bottom: var(--spacing-lg);
   padding-bottom: var(--spacing-md);
-  border-bottom: 2px solid var(--primary-color);
+  border-bottom: 1px solid var(--primary-color);
+  background: var(--bg-color-card);
+  padding: var(--spacing-lg);
+  border-radius: var(--border-radius-base);
+  box-shadow: var(--mall-health-card-shadow);
 }
 
 .cart-title {
   font-size: 24px;
   font-weight: 600;
   color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.cart-title::before {
+  content: '💊';
+  font-size: 28px;
 }
 
 .breadcrumb {
@@ -428,28 +455,71 @@ const getSpecsText = (specs) => {
   color: var(--primary-color);
   text-decoration: none;
   transition: var(--transition-fast);
+  position: relative;
+  padding: 0 2px;
+}
+
+.breadcrumb a:hover {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: var(--transition-fast);
+  position: relative;
+  padding: 0 2px;
 }
 
 .breadcrumb a:hover {
   color: var(--primary-color-dark);
 }
 
+.breadcrumb a::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--mall-primary-gradient);
+  transition: width 0.3s ease;
+}
+
+.breadcrumb a:hover::after {
+  width: 100%;
+}
+
 .cart-content {
   background-color: var(--bg-color-card);
   border-radius: var(--border-radius-base);
-  box-shadow: var(--shadow-base);
+  box-shadow: var(--mall-health-card-shadow);
   overflow: hidden;
+  transition: var(--transition-base);
+  border: 1px solid var(--border-light);
 }
 
 .empty-cart {
   text-align: center;
   padding: var(--spacing-xl) * 2;
+  background: var(--bg-color-light);
+  position: relative;
+}
+
+.empty-cart::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: var(--mall-primary-gradient);
+  border-radius: 2px;
 }
 
 .empty-cart-icon {
   font-size: 80px;
-  color: var(--text-placeholder);
+  color: var(--primary-color);
   margin-bottom: var(--spacing-lg);
+  opacity: 0.8;
+  filter: var(--mall-health-icon-filter);
 }
 
 .empty-cart-text {
@@ -459,7 +529,7 @@ const getSpecsText = (specs) => {
 }
 
 .go-shopping-btn {
-  background: var(--mall-primary-gradient);
+  background: var(--mall-health-primary-gradient);
   border: none;
   color: white;
   padding: 10px 24px;
@@ -468,17 +538,38 @@ const getSpecsText = (specs) => {
   font-size: 16px;
   font-weight: 500;
   transition: var(--transition-base);
-  box-shadow: var(--shadow-base);
+  box-shadow: var(--mall-health-button-shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+.go-shopping-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.go-shopping-btn:hover::before {
+  width: 300px;
+  height: 300px;
 }
 
 .go-shopping-btn:hover {
-  box-shadow: var(--shadow-elevated);
-  transform: translateY(-1px);
+  box-shadow: var(--mall-health-button-hover-shadow);
+  transform: translateY(-2px);
 }
 
 .cart-table {
   width: 100%;
   border-collapse: collapse;
+  background: var(--bg-color-card);
 }
 
 .cart-table th {
@@ -488,16 +579,34 @@ const getSpecsText = (specs) => {
   font-weight: 600;
   color: var(--text-primary);
   border-bottom: 1px solid var(--border-light);
+  position: relative;
+}
+
+.cart-table th::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: var(--spacing-md);
+  right: var(--spacing-md);
+  height: 1px;
+  background: var(--mall-health-border-gradient);
 }
 
 .cart-table td {
   padding: var(--spacing-md);
   border-bottom: 1px solid var(--border-light);
   transition: var(--transition-fast);
+  position: relative;
+}
+
+.cart-table tbody tr {
+  transition: var(--transition-base);
 }
 
 .cart-table tbody tr:hover {
   background-color: var(--border-extra-light);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-light);
 }
 
 .product-info {
@@ -511,19 +620,25 @@ const getSpecsText = (specs) => {
   border-radius: var(--border-radius-small);
   overflow: hidden;
   margin-right: var(--spacing-md);
-  box-shadow: var(--shadow-base);
+  box-shadow: var(--mall-health-product-shadow);
   transition: var(--transition-base);
+  border: 1px solid var(--border-light);
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .product-image:hover {
   transform: scale(var(--mall-image-hover-scale));
-  box-shadow: var(--shadow-light);
+  box-shadow: var(--mall-health-product-hover-shadow);
 }
 
 .product-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: var(--transition-base);
 }
 
 .product-details {
@@ -536,26 +651,55 @@ const getSpecsText = (specs) => {
   color: var(--text-primary);
   margin-bottom: var(--spacing-xs);
   transition: var(--transition-fast);
+  position: relative;
+  padding-left: 12px;
+}
+
+.product-name::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 4px;
+  background: var(--primary-color);
+  border-radius: 50%;
 }
 
 .product-name:hover {
   color: var(--primary-color);
+  padding-left: 16px;
 }
 
 .product-specs {
   font-size: 14px;
   color: var(--text-secondary);
+  padding-left: 12px;
 }
 
 .product-price {
   font-size: 16px;
   font-weight: 600;
-  color: var(--danger-color);
+  color: var(--mall-price-color);
+  display: inline-block;
+  position: relative;
+}
+
+.product-price::after {
+  content: '¥';
+  font-size: 12px;
+  position: absolute;
+  left: -10px;
+  top: 0;
+  opacity: 0.8;
 }
 
 .quantity-control {
   display: flex;
   align-items: center;
+  border-radius: var(--border-radius-small);
+  overflow: hidden;
 }
 
 .quantity-btn {
@@ -570,6 +714,8 @@ const getSpecsText = (specs) => {
   justify-content: center;
   font-size: 16px;
   transition: var(--transition-base);
+  position: relative;
+  z-index: 1;
 }
 
 .quantity-btn:first-child {
@@ -583,6 +729,24 @@ const getSpecsText = (specs) => {
 .quantity-btn:hover {
   border-color: var(--primary-color);
   color: var(--primary-color);
+  background: var(--bg-color-card);
+}
+
+.quantity-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--mall-health-primary-gradient);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+}
+
+.quantity-btn:hover::before {
+  opacity: 0.1;
 }
 
 .quantity-input {
@@ -593,12 +757,24 @@ const getSpecsText = (specs) => {
   border-left: none;
   border-right: none;
   font-size: 14px;
+  background: white;
 }
 
 .subtotal {
   font-size: 16px;
   font-weight: 600;
-  color: var(--danger-color);
+  color: var(--mall-price-color);
+  display: inline-block;
+  position: relative;
+}
+
+.subtotal::after {
+  content: '¥';
+  font-size: 12px;
+  position: absolute;
+  left: -10px;
+  top: 0;
+  opacity: 0.8;
 }
 
 .action-btn {
@@ -610,6 +786,8 @@ const getSpecsText = (specs) => {
   transition: var(--transition-fast);
   padding: var(--spacing-xs) var(--spacing-sm);
   border-radius: var(--border-radius-small);
+  position: relative;
+  overflow: hidden;
 }
 
 .action-btn:hover {
@@ -617,13 +795,40 @@ const getSpecsText = (specs) => {
   background-color: var(--border-extra-light);
 }
 
+.action-btn::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: var(--danger-color);
+  transform: translateX(-50%);
+  transition: width 0.3s ease;
+}
+
+.action-btn:hover::after {
+  width: 100%;
+}
+
 .cart-actions {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: var(--spacing-md);
-  background-color: var(--bg-color-light);
-  border-top: 2px solid var(--primary-color);
+  background: linear-gradient(135deg, var(--bg-color-light) 0%, var(--bg-color-card) 100%);
+  border-top: 1px solid var(--border-light);
+  position: relative;
+}
+
+.cart-actions::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--mall-health-border-gradient);
 }
 
 .left-actions {
@@ -640,6 +845,13 @@ const getSpecsText = (specs) => {
   color: var(--text-primary);
   cursor: pointer;
   user-select: none;
+  transition: var(--transition-fast);
+  padding: var(--spacing-xs);
+  border-radius: var(--border-radius-small);
+}
+
+.select-all:hover {
+  background-color: var(--border-extra-light);
 }
 
 .batch-action-btn {
@@ -651,11 +863,28 @@ const getSpecsText = (specs) => {
   cursor: pointer;
   font-size: 14px;
   transition: var(--transition-base);
+  position: relative;
+  overflow: hidden;
 }
 
 .batch-action-btn:hover {
   border-color: var(--danger-color);
   color: var(--danger-color);
+}
+
+.batch-action-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(220, 38, 38, 0.1), transparent);
+  transition: left 0.5s ease;
+}
+
+.batch-action-btn:hover::before {
+  left: 100%;
 }
 
 .right-actions {
@@ -667,6 +896,8 @@ const getSpecsText = (specs) => {
 .total-amount {
   font-size: 18px;
   font-weight: 600;
+  display: flex;
+  align-items: center;
 }
 
 .total-amount-label {
@@ -675,26 +906,58 @@ const getSpecsText = (specs) => {
 }
 
 .total-amount-value {
-  color: var(--danger-color);
+  color: var(--mall-price-color);
   font-size: 20px;
+  position: relative;
+  padding-left: 10px;
+}
+
+.total-amount-value::before {
+  content: '¥';
+  font-size: 14px;
+  position: absolute;
+  left: 0;
+  top: 0;
 }
 
 .checkout-btn {
-  background: var(--mall-danger-gradient);
+  background: var(--mall-health-danger-gradient);
   border: none;
   color: white;
-  padding: 10px 24px;
+  padding: 12px 28px;
   border-radius: var(--border-radius-base);
   cursor: pointer;
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 600;
   transition: var(--transition-base);
-  box-shadow: var(--shadow-base);
+  box-shadow: var(--mall-health-button-shadow);
+  position: relative;
+  overflow: hidden;
+  min-width: 120px;
+  text-align: center;
+}
+
+.checkout-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.checkout-btn:hover::before {
+  width: 300px;
+  height: 300px;
 }
 
 .checkout-btn:hover {
-  box-shadow: var(--shadow-elevated);
-  transform: translateY(-1px);
+  box-shadow: var(--mall-health-button-hover-shadow);
+  transform: translateY(-2px);
 }
 
 .checkout-btn:disabled {
@@ -706,6 +969,11 @@ const getSpecsText = (specs) => {
 
 .recommended-section {
   margin-top: var(--spacing-xl);
+  background: var(--bg-color-card);
+  border-radius: var(--border-radius-base);
+  padding: var(--spacing-lg);
+  box-shadow: var(--mall-health-card-shadow);
+  border: 1px solid var(--border-light);
 }
 
 .recommended-title {
@@ -714,7 +982,19 @@ const getSpecsText = (specs) => {
   color: var(--text-primary);
   margin-bottom: var(--spacing-lg);
   padding-bottom: var(--spacing-sm);
-  border-bottom: 2px solid var(--primary-color);
+  position: relative;
+  display: inline-block;
+}
+
+.recommended-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--mall-health-primary-gradient);
+  border-radius: 1.5px;
 }
 
 .recommended-products {
@@ -726,19 +1006,36 @@ const getSpecsText = (specs) => {
 .recommended-product-card {
   background-color: var(--bg-color-card);
   border-radius: var(--border-radius-base);
-  box-shadow: var(--shadow-base);
+  box-shadow: var(--mall-health-card-shadow);
   overflow: hidden;
   transition: var(--transition-base);
+  border: 1px solid var(--border-light);
+  position: relative;
+  background: white;
+}
+
+.recommended-product-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--mall-health-primary-gradient);
 }
 
 .recommended-product-card:hover {
-  transform: var(--mall-card-hover);
-  box-shadow: var(--shadow-elevated);
+  transform: translateY(-5px);
+  box-shadow: var(--mall-health-card-hover-shadow);
 }
 
 .recommended-product-image {
   height: 200px;
   overflow: hidden;
+  background: var(--bg-color-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .recommended-product-image img {
@@ -754,6 +1051,7 @@ const getSpecsText = (specs) => {
 
 .recommended-product-info {
   padding: var(--spacing-md);
+  background: var(--bg-color-card);
 }
 
 .recommended-product-name {
@@ -766,13 +1064,28 @@ const getSpecsText = (specs) => {
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+  transition: var(--transition-fast);
+}
+
+.recommended-product-name:hover {
+  color: var(--primary-color);
 }
 
 .recommended-product-price {
   font-size: 18px;
   font-weight: 600;
-  color: var(--danger-color);
+  color: var(--mall-price-color);
   margin-bottom: var(--spacing-sm);
+  display: inline-block;
+  position: relative;
+}
+
+.recommended-product-price::after {
+  content: '¥';
+  font-size: 14px;
+  position: absolute;
+  left: -12px;
+  top: 0;
 }
 
 .recommended-product-footer {
@@ -780,25 +1093,49 @@ const getSpecsText = (specs) => {
   justify-content: space-between;
   align-items: center;
   margin-top: var(--spacing-sm);
+  padding-top: var(--spacing-sm);
+  border-top: 1px solid var(--border-light);
 }
 
 .add-to-cart-btn {
-  background: var(--mall-primary-gradient);
+  background: var(--mall-health-primary-gradient);
   border: none;
   color: white;
-  padding: 6px 12px;
+  padding: 8px 16px;
   border-radius: var(--border-radius-small);
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
   transition: var(--transition-base);
+  box-shadow: var(--shadow-light);
+  position: relative;
+  overflow: hidden;
+}
+
+.add-to-cart-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.add-to-cart-btn:hover::before {
+  width: 200px;
+  height: 200px;
 }
 
 .add-to-cart-btn:hover {
   transform: translateY(-1px);
-  box-shadow: var(--shadow-base);
+  box-shadow: var(--mall-health-button-shadow);
 }
 
+/* 响应式设计优化 */
 @media (max-width: 768px) {
   .cart-container {
     padding: 0 var(--spacing-md);
@@ -808,6 +1145,7 @@ const getSpecsText = (specs) => {
     flex-direction: column;
     align-items: flex-start;
     gap: var(--spacing-sm);
+    padding: var(--spacing-md);
   }
   
   .cart-actions {
@@ -819,6 +1157,11 @@ const getSpecsText = (specs) => {
   .right-actions {
     width: 100%;
     justify-content: space-between;
+  }
+  
+  .checkout-btn {
+    min-width: 100px;
+    padding: 10px 20px;
   }
   
   .recommended-products {
@@ -836,5 +1179,45 @@ const getSpecsText = (specs) => {
     width: 60px;
     height: 60px;
   }
+  
+  .cart-table {
+    font-size: 14px;
+  }
+  
+  .quantity-input {
+    width: 50px;
+  }
+  
+  .recommended-section {
+    padding: var(--spacing-md);
+  }
 }
+
+/* 动画效果 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cart-content,
+.recommended-section {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.cart-table tbody tr {
+  animation: fadeInUp 0.4s ease-out;
+  animation-fill-mode: both;
+}
+
+.cart-table tbody tr:nth-child(1) { animation-delay: 0.1s; }
+.cart-table tbody tr:nth-child(2) { animation-delay: 0.2s; }
+.cart-table tbody tr:nth-child(3) { animation-delay: 0.3s; }
+.cart-table tbody tr:nth-child(4) { animation-delay: 0.4s; }
+.cart-table tbody tr:nth-child(5) { animation-delay: 0.5s; }
 </style>
