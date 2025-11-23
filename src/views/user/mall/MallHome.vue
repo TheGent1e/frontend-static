@@ -1,990 +1,931 @@
 <template>
-  <div class="health-record">
+  <div class="mall-home">
     <!-- 顶部装饰条 -->
     <div class="top-decoration"></div>
     
     <!-- 页面标题区域 -->
     <div class="page-header">
-      <h2 class="header-title">健康档案</h2>
-      <p class="header-desc">完整记录您的健康数据，随时查看健康趋势</p>
+      <h2 class="header-title">健康商城</h2>
+      <p class="header-desc">精选健康产品，呵护您的健康生活</p>
     </div>
 
-    <!-- 返回按钮 -->
-    <div class="back-button-container">
+    <!-- 操作按钮区域 -->
+    <div class="action-buttons">
       <el-button 
         type="primary" 
         icon="el-icon-arrow-left" 
         @click="goBack"
-        class="back-btn"
+        class="back-button"
       >
         返回首页
       </el-button>
+      
+      <!-- 购物车按钮 -->
+      <el-button 
+        :type="'primary'"
+        icon="el-icon-shopping-cart" 
+        @click="goToCart"
+        class="cart-button"
+      >
+        购物车 ({{ cartItemsCount }})
+      </el-button>
     </div>
 
-    <!-- 健康数据概览卡片 -->
-    <el-card class="overview-card" shadow="hover">
-      <template #header>
-        <div class="card-header">
-          <span class="card-header-title">健康数据概览</span>
-          <div class="card-header-line"></div>
-        </div>
-      </template>
-      
-      <div class="health-overview">
-        <div class="overview-item" :class="{'hover-scale': true}">
-          <div class="overview-icon blood-pressure-icon">
-            <el-icon class="icon-inner"><Scale /></el-icon>
-          </div>
-          <div class="overview-content">
-            <div class="overview-title">血压</div>
-            <div class="overview-value">{{ healthData?.bloodPressure?.latest?.systolic || '-' }}/{{ healthData?.bloodPressure?.latest?.diastolic || '-' }} mmHg</div>
-            <div class="overview-date">测量时间：{{ healthData?.bloodPressure?.latest?.date || '-' }}</div>
-          </div>
-          <div class="overview-tag">
-            <el-tag :type="getBloodPressureStatus(
-              healthData?.bloodPressure?.latest?.systolic || 0,
-              healthData?.bloodPressure?.latest?.diastolic || 0
-            )">
-              {{ getBloodPressureStatusText(
-                healthData?.bloodPressure?.latest?.systolic || 0,
-                healthData?.bloodPressure?.latest?.diastolic || 0
-              ) }}
-            </el-tag>
-          </div>
-        </div>
-        
-        <div class="overview-item" :class="{'hover-scale': true}">
-          <div class="overview-icon blood-sugar-icon">
-            <el-icon class="icon-inner"><Cpu /></el-icon>
-          </div>
-          <div class="overview-content">
-            <div class="overview-title">血糖</div>
-            <div class="overview-value">{{ healthData?.bloodSugar?.latest?.value || '-' }} mmol/L</div>
-            <div class="overview-date">测量时间：{{ healthData?.bloodSugar?.latest?.date || '-' }}</div>
-          </div>
-          <div class="overview-tag">
-            <el-tag :type="getStatusType(healthData?.bloodSugar?.latest?.value || 0)">
-              {{ getStatusText(healthData?.bloodSugar?.latest?.value || 0) }}
-            </el-tag>
-          </div>
-        </div>
-        
-        <div class="overview-item" :class="{'hover-scale': true}">
-          <div class="overview-icon heart-rate-icon">
-            <el-icon class="icon-inner"><Heart /></el-icon>
-          </div>
-          <div class="overview-content">
-            <div class="overview-title">心率</div>
-            <div class="overview-value">{{ healthData?.heartRate?.latest?.value || '-' }} 次/分</div>
-            <div class="overview-date">测量时间：{{ healthData?.heartRate?.latest?.date || '-' }}</div>
-          </div>
-          <div class="overview-tag">
-            <el-tag :type="getStatusType(healthData?.heartRate?.latest?.value || 0)">
-              {{ getStatusText(healthData?.heartRate?.latest?.value || 0) }}
-            </el-tag>
-          </div>
-        </div>
-      </div>
-    </el-card>
-
-    <!-- 健康数据记录区域 -->
-    <div class="health-records-section">
-      <div class="section-header">
-        <div class="section-header-left">
-          <h3 class="section-title">健康数据记录</h3>
-          <div class="section-line"></div>
-        </div>
-        <div class="section-header-right">
-          <el-select 
-            v-model="activeTab" 
-            placeholder="选择数据类型" 
-            size="small"
-            class="data-select"
+    <!-- 搜索和筛选区域 -->
+    <div class="search-filter-section">
+      <el-card :shadow="'hover'" class="search-card">
+        <div class="search-content">
+          <el-input
+            v-model="searchKeyword"
+            placeholder="搜索健康产品"
+            clearable
+            prefix-icon="el-icon-search"
+            class="search-input"
+          />
+          <el-select
+            v-model="selectedCategory"
+            placeholder="选择产品分类"
+            clearable
+            class="category-select"
           >
-            <el-option label="血压记录" value="bloodPressure" />
-            <el-option label="血糖记录" value="bloodSugar" />
-            <el-option label="心率记录" value="heartRate" />
+            <el-option label="血压监测" value="blood-pressure" />
+            <el-option label="血糖监测" value="blood-sugar" />
+            <el-option label="心率监测" value="heart-rate" />
+            <el-option label="保健产品" value="health-care" />
+            <el-option label="医疗器械" value="medical-device" />
           </el-select>
-          <el-button 
-            type="primary" 
-            size="small" 
-            @click="addNewRecord"
-            class="add-btn"
-          >
-            <el-icon class="add-icon"><Plus /></el-icon> 添加记录
-          </el-button>
+          <el-button type="primary" @click="searchProducts" class="search-button">搜索</el-button>
         </div>
+      </el-card>
+    </div>
+
+    <!-- 热门推荐 -->
+    <div class="recommendations-section">
+      <div class="section-header">
+        <h3 class="section-title">热门推荐</h3>
+        <div class="section-line"></div>
       </div>
+      
+      <el-row :gutter="24">
+        <el-col :xs="12" :sm="6" :md="4" v-for="product in featuredProducts" :key="product.id">
+          <el-card :shadow="'hover'" class="product-card" @click="viewProductDetail(product.id)">
+            <!-- 商品图片区域 -->
+            <div class="product-image-container">
+              <img :src="product.image" :alt="product.name" class="product-image" />
+              <!-- 标签区域 -->
+              <div class="product-badges">
+                <div v-if="product.isNew" class="badge new-badge">新品</div>
+                <div v-if="product.isDiscount" class="badge discount-badge">促销</div>
+              </div>
+            </div>
+            
+            <!-- 商品信息区域 -->
+            <div class="product-info">
+              <h4 class="product-name">{{ product.name }}</h4>
+              <div class="price-rating-container">
+                <div class="product-price">¥{{ product.price }}</div>
+                <div class="product-rating">
+                  <el-rate :value="product.rating" disabled size="small" />
+                  <span class="rating-count">({{ product.reviewCount }})</span>
+                </div>
+              </div>
+              <el-button 
+                type="primary" 
+                size="small" 
+                @click.stop="addToCart(product.id)"
+                class="add-to-cart-btn"
+              >
+                <el-icon><ShoppingCart /></el-icon> 加入购物车
+              </el-button>
+            </div>
+          </el-card>
+        </el-col>
+      </el-row>
+    </div>
 
-      <!-- 数据表格 -->
-      <el-card class="records-table-card" shadow="hover">
-        <div class="table-container">
-          <el-table 
-            :data="currentRecordsList" 
-            style="width: 100%"
-            :border="true"
-            :header-cell-style="tableHeaderStyle"
-            row-class-name="table-row-hover"
-          >
-            <!-- 血压记录表格 -->
-            <template v-if="activeTab === 'bloodPressure'">
-              <el-table-column prop="systolic" label="收缩压" width="100">
-                <template #default="scope">
-                  <span class="table-value">{{ scope.row.systolic }} mmHg</span>
-                </template>
-              </el-table-column>
-              <el-table-column prop="diastolic" label="舒张压" width="100">
-                <template #default="scope">
-                  <span class="table-value">{{ scope.row.diastolic }} mmHg</span>
-                </template>
-              </el-table-column>
-              <el-table-column label="状态" width="100">
-                <template #default="scope">
-                  <el-tag :type="getBloodPressureStatus(scope.row.systolic, scope.row.diastolic)" class="status-tag">
-                    {{ getBloodPressureStatusText(scope.row.systolic, scope.row.diastolic) }}
-                  </el-tag>
-                </template>
-              </el-table-column>
-            </template>
-
-            <!-- 血糖/心率记录表格 -->
-            <template v-else>
-              <el-table-column prop="value" label="数值" width="120">
-                <template #default="scope">
-                  <span class="table-value">{{ scope.row.value }} {{ activeTab === 'bloodSugar' ? 'mmol/L' : '次/分' }}</span>
-                </template>
-              </el-table-column>
-              <el-table-column label="状态" width="100">
-                <template #default="scope">
-                  <el-tag :type="getStatusType(scope.row.value)" class="status-tag">
-                    {{ getStatusText(scope.row.value) }}
-                  </el-tag>
-                </template>
-              </el-table-column>
-            </template>
-
-            <!-- 通用列 -->
-            <el-table-column prop="date" label="测量日期" width="150" />
-            <el-table-column prop="time" label="测量时间" width="100" />
-            <el-table-column prop="notes" label="备注" />
-            <el-table-column label="操作" width="140" fixed="right">
-              <template #default="scope">
+    <!-- 商品分类展示 -->
+    <div class="categories-section">
+      <div class="section-header">
+        <h3 class="section-title">商品分类</h3>
+        <div class="section-line"></div>
+      </div>
+      
+      <div v-for="category in productCategories" :key="category.id" class="category-item">
+        <h4 class="category-title">{{ category.name }}</h4>
+        <el-row :gutter="24">
+          <el-col :xs="12" :sm="6" :md="4" v-for="product in getCategoryProducts(category.id)" :key="product.id">
+            <el-card :shadow="'hover'" class="product-card" @click="viewProductDetail(product.id)">
+              <div class="product-image-container">
+                <img :src="product.image" :alt="product.name" class="product-image" />
+              </div>
+              <div class="product-info">
+                <h4 class="product-name">{{ product.name }}</h4>
+                <div class="product-price">¥{{ product.price }}</div>
                 <el-button 
                   type="primary" 
                   size="small" 
-                  text 
-                  @click="editRecord(scope.row)"
-                  class="operation-btn edit-btn"
+                  @click.stop="addToCart(product.id)"
+                  class="add-to-cart-btn"
                 >
-                  编辑
+                  <el-icon><ShoppingCart /></el-icon> 加入购物车
                 </el-button>
-                <el-button 
-                  type="danger" 
-                  size="small" 
-                  text 
-                  @click="deleteRecord(scope.row.id)"
-                  class="operation-btn delete-btn"
-                >
-                  删除
-                </el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-        </div>
-
-        <!-- 分页 -->
-        <div class="pagination-container">
-          <el-pagination
-:current-page="pagination.currentPage"
-            :page-size="pagination.pageSize"
-            @update:page-size="val => pagination.pageSize = val"
-            :page-sizes="[10, 20, 50]"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="totalRecords"
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            class="custom-pagination"
-          />
-        </div>
-      </el-card>
-    </div>
-
-    <!-- 健康趋势图表 -->
-    <div class="health-trends-section">
-      <div class="section-header">
-        <div class="section-header-left">
-          <h3 class="section-title">健康趋势分析</h3>
-          <div class="section-line"></div>
-        </div>
-        <div class="section-header-right">
-          <el-select 
-            v-model="chartType" 
-            placeholder="选择图表类型" 
-            size="small"
-            class="chart-select"
-          >
-            <el-option label="最近7天" value="7days" />
-            <el-option label="最近30天" value="30days" />
-            <el-option label="最近90天" value="90days" />
-          </el-select>
-        </div>
+              </div>
+            </el-card>
+          </el-col>
+        </el-row>
       </div>
-
-      <el-card class="trends-chart-card" shadow="hover">
-        <div class="chart-container">
-          <!-- 图表占位区域，添加加载动画和提示 -->
-          <div class="chart-placeholder" v-if="!chartLoaded">
-            <el-loading type="spinner" text="加载趋势图表中..." class="chart-loading"></el-loading>
-          </div>
-          <div id="healthTrendsChart" class="chart-content"></div>
-        </div>
-      </el-card>
     </div>
-    
-    <!-- 底部装饰 -->
-    <div class="bottom-decoration"></div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { ElMessage, ElMessageBox, ElLoading } from 'element-plus'
-import { Scale, Cpu, Heart, Plus } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
+import { ShoppingCart } from '@element-plus/icons-vue'
 
 const router = useRouter()
 
-// 响应式数据
-const activeTab = ref('bloodPressure')
-const chartType = ref('7days')
-const chartLoaded = ref(false)
-const healthData = ref({
-  bloodPressure: {
-    latest: {
-      systolic: 120,
-      diastolic: 80,
-      date: '2024-10-23'
-    }
+// 状态管理
+const searchKeyword = ref('')
+const selectedCategory = ref('')
+const cartItemsCount = ref(0)
+
+// 模拟商品数据
+const allProducts = ref([
+  {
+    id: 1,
+    name: '智能血压计',
+    price: 299.00,
+    image: '/images/products/blood-pressure.jpg',
+    category: 'blood-pressure',
+    rating: 4.8,
+    reviewCount: 156,
+    isNew: true,
+    isDiscount: false
   },
-  bloodSugar: {
-    latest: {
-      value: 5.6,
-      date: '2024-10-23'
-    }
+  {
+    id: 2,
+    name: '血糖仪套装',
+    price: 199.00,
+    image: '/images/products/blood-sugar.jpg',
+    category: 'blood-sugar',
+    rating: 4.6,
+    reviewCount: 89,
+    isNew: false,
+    isDiscount: true
   },
-  heartRate: {
-    latest: {
-      value: 72,
-      date: '2024-10-23'
-    }
+  {
+    id: 3,
+    name: '智能心率手环',
+    price: 159.00,
+    image: '/images/products/heart-rate.jpg',
+    category: 'heart-rate',
+    rating: 4.7,
+    reviewCount: 234,
+    isNew: false,
+    isDiscount: false
+  },
+  {
+    id: 4,
+    name: '老年人保健枕',
+    price: 129.00,
+    image: '/images/products/pillow.jpg',
+    category: 'health-care',
+    rating: 4.5,
+    reviewCount: 67,
+    isNew: false,
+    isDiscount: false
+  },
+  {
+    id: 5,
+    name: '电子体温计',
+    price: 89.00,
+    image: '/images/products/thermometer.jpg',
+    category: 'medical-device',
+    rating: 4.4,
+    reviewCount: 112,
+    isNew: false,
+    isDiscount: true
+  },
+  {
+    id: 6,
+    name: '家用血糖仪试纸',
+    price: 158.00,
+    image: '/images/products/test-strips.jpg',
+    category: 'blood-sugar',
+    rating: 4.9,
+    reviewCount: 189,
+    isNew: false,
+    isDiscount: false
+  },
+  {
+    id: 7,
+    name: '智能体重秤',
+    price: 199.00,
+    image: '/images/products/scale.jpg',
+    category: 'health-care',
+    rating: 4.6,
+    reviewCount: 98,
+    isNew: true,
+    isDiscount: false
+  },
+  {
+    id: 8,
+    name: '按摩器套装',
+    price: 299.00,
+    image: '/images/products/massager.jpg',
+    category: 'health-care',
+    rating: 4.7,
+    reviewCount: 76,
+    isNew: false,
+    isDiscount: false
   }
+])
+
+// 产品分类
+const productCategories = ref([
+  { id: 'blood-pressure', name: '血压监测' },
+  { id: 'blood-sugar', name: '血糖监测' },
+  { id: 'heart-rate', name: '心率监测' },
+  { id: 'health-care', name: '保健产品' },
+  { id: 'medical-device', name: '医疗器械' }
+])
+
+// 计算属性：精选产品
+const featuredProducts = computed(() => {
+  return allProducts.value.slice(0, 8)
 })
 
-// 分页数据
-const pagination = ref({
-  currentPage: 1,
-  pageSize: 10
-})
-
-// 模拟数据
-const mockBloodPressureData = [
-  { id: 1, systolic: 120, diastolic: 80, date: '2024-10-23', time: '08:00', notes: '晨起测量' },
-  { id: 2, systolic: 125, diastolic: 82, date: '2024-10-22', time: '18:30', notes: '晚餐后' },
-  { id: 3, systolic: 118, diastolic: 78, date: '2024-10-21', time: '07:45', notes: '晨起测量' },
-  { id: 4, systolic: 130, diastolic: 85, date: '2024-10-20', time: '20:00', notes: '睡前测量' },
-  { id: 5, systolic: 122, diastolic: 81, date: '2024-10-19', time: '08:15', notes: '晨起测量' }
-]
-
-const mockBloodSugarData = [
-  { id: 1, value: 5.6, date: '2024-10-23', time: '08:00', notes: '空腹' },
-  { id: 2, value: 7.2, date: '2024-10-23', time: '12:30', notes: '餐后2小时' },
-  { id: 3, value: 5.8, date: '2024-10-22', time: '07:45', notes: '空腹' },
-  { id: 4, value: 6.9, date: '2024-10-22', time: '12:15', notes: '餐后2小时' },
-  { id: 5, value: 5.5, date: '2024-10-21', time: '08:10', notes: '空腹' }
-]
-
-const mockHeartRateData = [
-  { id: 1, value: 72, date: '2024-10-23', time: '08:00', notes: '静息状态' },
-  { id: 2, value: 85, date: '2024-10-23', time: '14:30', notes: '轻度活动后' },
-  { id: 3, value: 70, date: '2024-10-22', time: '07:45', notes: '静息状态' },
-  { id: 4, value: 92, date: '2024-10-22', time: '18:00', notes: '运动后' },
-  { id: 5, value: 71, date: '2024-10-21', time: '08:15', notes: '静息状态' }
-]
-
-// 计算属性：当前显示的记录列表
-const currentRecordsList = computed(() => {
-  switch (activeTab.value) {
-    case 'bloodPressure':
-      return mockBloodPressureData
-    case 'bloodSugar':
-      return mockBloodSugarData
-    case 'heartRate':
-      return mockHeartRateData
-    default:
-      return []
-  }
-})
-
-// 计算属性：总记录数
-const totalRecords = computed(() => {
-  return currentRecordsList.value.length
-})
-
-// 表格头部样式
-const tableHeaderStyle = {
-  'background-color': 'var(--el-color-primary-light-9)',
-  'color': 'var(--el-color-primary)',
-  'font-weight': '600',
-  'border-bottom': '1px solid var(--el-color-primary-light-7)'
+// 获取分类商品
+const getCategoryProducts = (categoryId) => {
+  return allProducts.value.filter(product => product.category === categoryId).slice(0, 4)
 }
 
-// 方法
+// 方法：返回首页
 const goBack = () => {
   router.push('/user/home')
 }
 
-const addNewRecord = () => {
-  ElMessage.info('添加健康记录功能正在开发中')
+// 方法：跳转到购物车
+const goToCart = () => {
+  router.push('/user/mall/cart')
 }
 
-const editRecord = (record) => {
-  ElMessage.info('编辑健康记录功能正在开发中')
+// 方法：查看商品详情
+const viewProductDetail = (productId) => {
+  router.push(`/user/mall/product/${productId}`)
 }
 
-const deleteRecord = async (id) => {
-  try {
-    await ElMessageBox.confirm('确定要删除这条记录吗？', '提示', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning'
-    })
-    ElMessage.success('删除成功')
-    // 这里应该调用API删除记录
-  } catch (error) {
-    // 用户取消删除
-  }
+// 方法：加入购物车
+const addToCart = (productId) => {
+  // 模拟添加购物车逻辑
+  cartItemsCount.value++
+  ElMessage.success('已添加到购物车')
+  // 在实际应用中，这里应该调用API将商品添加到购物车
 }
 
-// 获取血压状态
-const getBloodPressureStatus = (systolic, diastolic) => {
-  if (systolic < 120 && diastolic < 80) {
-    return 'success'
-  } else if (systolic < 140 && diastolic < 90) {
-    return 'info'
-  } else {
-    return 'warning'
-  }
-}
-
-const getBloodPressureStatusText = (systolic, diastolic) => {
-  if (systolic < 120 && diastolic < 80) {
-    return '正常'
-  } else if (systolic < 140 && diastolic < 90) {
-    return '正常高值'
-  } else {
-    return '偏高'
-  }
-}
-
-// 获取其他指标状态
-const getStatusType = (value) => {
-  if (activeTab.value === 'bloodSugar') {
-    return value < 6.1 ? 'success' : (value < 7.0 ? 'info' : 'warning')
-  } else { // heartRate
-    return value >= 60 && value <= 100 ? 'success' : (value < 60 ? 'info' : 'warning')
-  }
-}
-
-const getStatusText = (value) => {
-  if (activeTab.value === 'bloodSugar') {
-    return value < 6.1 ? '正常' : (value < 7.0 ? '正常高值' : '偏高')
-  } else { // heartRate
-    return value >= 60 && value <= 100 ? '正常' : (value < 60 ? '偏低' : '偏高')
-  }
-}
-
-// 分页处理
-const handleSizeChange = (size) => {
-  pagination.value.pageSize = size
-}
-
-const handleCurrentChange = (current) => {
-  pagination.value.currentPage = current
-}
-
-// 初始化图表（模拟加载）
-const initChart = () => {
-  // 模拟图表加载延迟
-  const loadingInstance = ElLoading.service({
-    target: '#healthTrendsChart',
-    text: '加载趋势图表中...',
-    background: 'rgba(255, 255, 255, 0.8)'
-  })
-  
-  setTimeout(() => {
-    loadingInstance.close()
-    chartLoaded.value = true
-    console.log('图表初始化完成')
-    // 实际项目中这里会初始化ECharts等图表库
-  }, 1500)
+// 方法：搜索商品
+const searchProducts = () => {
+  // 模拟搜索逻辑
+  ElMessage.info(`搜索关键词: ${searchKeyword.value}, 分类: ${selectedCategory.value}`)
+  // 在实际应用中，这里应该调用API进行商品搜索
 }
 
 // 生命周期钩子
 onMounted(() => {
-  // 这里应该调用API获取健康数据
-  console.log('加载健康档案数据')
-  
-  // 初始化图表
-  initChart()
-  
-  // 模拟加载数据
-  setTimeout(() => {
-    // 数据已在初始化时设置为mock数据
-  }, 500)
+  // 初始化购物车数量
+  // 在实际应用中，这里应该从API或localStorage获取购物车数量
+  cartItemsCount.value = Math.floor(Math.random() * 10)
 })
 </script>
 
 <style scoped>
-/* 主题变量定义 */
-:root {
-  --primary-color: #409eff;
-  --primary-light: #66b1ff;
-  --primary-dark: #337ecc;
-  --success-color: #67c23a;
-  --info-color: #909399;
-  --warning-color: #e6a23c;
-  --danger-color: #f56c6c;
-  --bg-color: #f5f7fa;
-  --card-bg: #ffffff;
-  --text-primary: #1989fa;
-  --text-secondary: #606266;
-  --border-color: #e4e7ed;
-  --hover-color: #f0f7ff;
+/* 导入主题变量 */
+.mall-home {
+  padding: var(--space-lg);
+  background-color: var(--bg-primary); /* 使用主背景色替代辅助背景色 */
+  min-height: 100vh;
+  /* 简化背景纹理，确保在各环境下显示一致 */
+  background-image: radial-gradient(var(--primary-light) 1px, transparent 1px);
+  background-size: 30px 30px;
+  background-attachment: scroll; /* 改为scroll以避免在不同浏览器中固定背景的兼容性问题 */
+  background-position: top left;
+  background-repeat: repeat;
 }
 
-.health-record {
-  padding: 20px;
-  min-height: 100vh;
-  background-color: var(--bg-color);
+/* 顶部装饰条 - 使用健康主题绿色 */
+.top-decoration {
+  background: var(--health-gradient-primary);
+  height: 4px;
+  margin: calc(var(--space-lg) * -1) calc(var(--space-lg) * -1) var(--space-lg) calc(var(--space-lg) * -1);
+  border-radius: 0 0 2px 2px;
+  box-shadow: 0 2px 6px rgba(76, 175, 80, 0.2);
+}
+
+/* 页面标题区域 - 健康风格设计 */
+.page-header {
+  text-align: center;
+  margin-bottom: var(--space-xl);
+  padding: var(--space-md) 0;
+  background-color: var(--bg-primary);
+  border-radius: var(--radius-md);
+  box-shadow: var(--health-card-shadow);
+  border: 1px solid var(--border-tertiary);
   position: relative;
   overflow: hidden;
 }
 
-/* 顶部底部装饰条 */
-.top-decoration {
+/* 装饰元素 - 医疗风格 */
+.page-header::before {
+  content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+  top: -10px;
+  right: -10px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--primary-light);
+  opacity: 0.2;
+  z-index: 0;
 }
 
-.bottom-decoration {
+.page-header::after {
+  content: '';
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--success-color), var(--primary-color));
-}
-
-/* 页面标题 */
-.page-header {
-  margin-bottom: 30px;
-  text-align: center;
-  padding: 15px 0;
-  position: relative;
+  bottom: -15px;
+  left: 20%;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--success-light);
+  opacity: 0.15;
+  z-index: 0;
 }
 
 .header-title {
-  font-size: 28px;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 10px;
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  color: var(--primary-color);
+  margin-bottom: var(--space-sm);
+  line-height: var(--line-height-lg);
   position: relative;
-  display: inline-block;
-}
-
-.header-title::after {
-  content: '';
-  position: absolute;
-  bottom: -8px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 60px;
-  height: 3px;
-  background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
-  border-radius: 3px;
+  z-index: 1;
+  /* 添加医疗风格的文字装饰 */
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .header-desc {
-  font-size: 16px;
+  font-size: var(--font-size-base);
   color: var(--text-secondary);
-  opacity: 0.9;
-}
-
-/* 返回按钮 */
-.back-button-container {
-  margin-bottom: 25px;
-}
-
-.back-btn {
-  background-color: var(--primary-color) !important;
-  border-color: var(--primary-color) !important;
-  transition: all 0.3s ease !important;
-}
-
-.back-btn:hover {
-  background-color: var(--primary-dark) !important;
-  border-color: var(--primary-dark) !important;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.3);
-}
-
-/* 概览卡片 */
-.overview-card {
-  margin-bottom: 30px;
-  border-radius: 12px !important;
-  border: none !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
-  overflow: hidden;
-}
-
-.card-header {
-  display: flex;
-  align-items: center;
-  padding: 16px 20px;
-  background-color: var(--card-bg);
-  border-bottom: 1px solid var(--border-color);
-}
-
-.card-header-title {
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-right: 15px;
-}
-
-.card-header-line {
-  flex: 1;
-  height: 1px;
-  background-color: var(--border-color);
-}
-
-.health-overview {
-  display: flex;
-  gap: 24px;
-  flex-wrap: wrap;
-  padding: 25px;
-}
-
-.overview-item {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  padding: 20px;
-  background-color: var(--card-bg);
-  border-radius: 10px;
-  flex: 1;
-  min-width: 280px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  position: relative;
-  overflow: hidden;
-}
-
-/* 悬停缩放效果 */
-.hover-scale {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.hover-scale:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 24px rgba(64, 158, 255, 0.15);
-}
-
-.overview-item::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 4px;
-  height: 100%;
-  background: var(--primary-color);
-}
-
-.overview-icon {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 28px;
-  flex-shrink: 0;
+  line-height: var(--line-height-base);
   position: relative;
   z-index: 1;
 }
 
-.overview-icon::after {
+/* 操作按钮区域 */
+.action-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-lg);
+  flex-wrap: wrap;
+  gap: var(--space-base);
+}
+
+.back-button {
+  background-color: var(--bg-tertiary);
+  border-color: var(--border-secondary);
+  color: var(--text-primary);
+  transition: all var(--transition-base);
+}
+
+.back-button:hover {
+  background-color: var(--bg-secondary) !important;
+  border-color: var(--primary-color) !important;
+  color: var(--primary-color) !important;
+}
+
+.cart-button {
+  background-color: var(--success-color);
+  border-color: var(--success-color);
+  position: relative;
+  overflow: hidden;
+  transition: all var(--transition-base);
+}
+
+.cart-button:hover {
+  background-color: var(--success-hover) !important;
+  border-color: var(--success-hover) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+}
+
+/* 搜索和筛选区域 */
+.search-filter-section {
+  margin-bottom: var(--space-xl);
+}
+
+.search-card {
+  border-radius: var(--radius-md);
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-primary);
+  box-shadow: var(--health-card-shadow);
+  transition: all var(--transition-base);
+  position: relative;
+  overflow: hidden;
+}
+
+.search-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--health-gradient-primary);
+}
+
+.search-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary-light);
+  transform: translateY(-2px);
+}
+
+.search-content {
+  display: flex;
+  gap: var(--space-base);
+  align-items: center;
+  flex-wrap: wrap;
+  padding: var(--space-base);
+  position: relative;
+  z-index: 1;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 200px;
+  border-radius: var(--radius-base);
+  border-color: var(--border-primary);
+  transition: all var(--transition-base);
+}
+
+.search-input:hover,
+.search-input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+}
+
+.category-select {
+  width: 200px;
+  border-radius: var(--radius-base);
+  border-color: var(--border-primary);
+  transition: all var(--transition-base);
+}
+
+.category-select:hover,
+.category-select:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+}
+
+.search-button {
+  white-space: nowrap;
+  padding: 0 var(--space-lg);
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  color: white;
+  transition: all var(--transition-base);
+  border-radius: var(--radius-base);
+}
+
+.search-button:hover {
+  background-color: var(--primary-hover) !important;
+  border-color: var(--primary-hover) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+}
+
+.search-button:focus {
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5), 0 0 0 4px rgba(76, 175, 80, 0.3);
+}
+
+/* 区域标题 - 健康主题样式 */
+.section-header {
+  margin-bottom: var(--space-lg);
+  position: relative;
+  padding-bottom: var(--space-xs);
+  display: flex;
+  align-items: center;
+  gap: var(--space-base);
+}
+
+.section-title {
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  color: var(--primary-color);
+  margin-bottom: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  position: relative;
+}
+
+/* 健康主题装饰图标 */
+.section-title::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+}
+
+.section-line {
+  height: 3px;
+  background: var(--health-gradient-primary);
+  border-radius: 2px;
+  flex: 1;
+  transition: all var(--transition-base);
+}
+
+/* 内容区域 */
+.recommendations-section,
+.categories-section {
+  margin-bottom: var(--space-2xl);
+}
+
+/* 商品卡片 - 健康主题设计 */
+.product-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-primary);
+  overflow: hidden;
+  background-color: var(--bg-primary);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  box-shadow: var(--health-card-shadow);
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary-color);
+  /* 添加健康主题的悬停效果 */
+  background-color: var(--bg-secondary);
+}
+
+/* 健康主题卡片装饰线 */
+.product-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--health-gradient-primary);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+  transform-origin: left;
+}
+
+.product-card:hover::after {
+  transform: scaleX(1);
+}
+
+/* 确保鼠标悬停状态下的反馈更加明显，提升可访问性 */
+.product-card:focus-within {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* 商品图片区域 */
+.product-image-container {
+  position: relative;
+  padding: var(--space-base);
+  text-align: center;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-tertiary);
+  flex-shrink: 0;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.product-image {
+  width: 100%;
+  height: 180px;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.product-card:hover .product-image {
+  transform: scale(1.1);
+}
+
+/* 标签区域 - 健康主题样式 */
+.product-badges {
+  position: absolute;
+  top: var(--space-base);
+  left: var(--space-base);
+  right: var(--space-base);
+  display: flex;
+  justify-content: space-between;
+}
+
+.badge {
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: white;
+  white-space: nowrap;
+  border: 1px solid transparent;
+  transition: all var(--transition-base);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transform: translateY(0);
+}
+
+.product-card:hover .badge {
+  transform: translateY(-2px);
+}
+
+.new-badge {
+  background-color: var(--health-tag-new);
+  border-color: var(--health-tag-new);
+}
+
+.discount-badge {
+  background-color: var(--health-tag-discount);
+  border-color: var(--health-tag-discount);
+}
+
+/* 商品信息区域 */
+.product-info {
+  padding: var(--space-base);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--border-tertiary);
+}
+
+.product-name {
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: var(--space-sm);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-height: var(--line-height-base);
+  min-height: 48px;
+  transition: color var(--transition-base);
+}
+
+.product-card:hover .product-name {
+  color: var(--primary-color);
+}
+
+/* 价格和评分容器 */
+.price-rating-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-sm);
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+/* 商品价格 - 健康主题样式 */
+.product-price {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--health-price-color);
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.product-price::before {
+  content: '¥';
+  font-size: var(--font-size-base);
+}
+
+.product-rating {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.rating-count {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+/* 加入购物车按钮 - 健康主题样式 */
+.add-to-cart-btn {
+  width: 100%;
+  margin-top: auto;
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  color: white;
+  transition: all 0.3s ease;
+  border-radius: var(--radius-base);
+  position: relative;
+  overflow: hidden;
+}
+
+.add-to-cart-btn::before {
   content: '';
   position: absolute;
   top: 50%;
   left: 50%;
+  width: 0;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  transition: width 0.4s ease;
   transform: translate(-50%, -50%);
-  width: 70%;
-  height: 70%;
-  border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.3);
-  z-index: -1;
 }
 
-.icon-inner {
-  z-index: 2;
+.add-to-cart-btn:hover::before {
+  width: 100%;
 }
 
-.blood-pressure-icon {
-  background-color: rgba(236, 72, 153, 0.15);
-  color: #ec4899;
-  border: 1px solid rgba(236, 72, 153, 0.2);
+.add-to-cart-btn:hover {
+  background-color: var(--primary-hover) !important;
+  border-color: var(--primary-hover) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
 }
 
-.blood-pressure-icon::before {
-  background: linear-gradient(135deg, #ec4899, #f472b6);
+.add-to-cart-btn:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
 }
 
-.blood-sugar-icon {
-  background-color: rgba(59, 130, 246, 0.15);
-  color: #3b82f6;
-  border: 1px solid rgba(59, 130, 246, 0.2);
+/* 分类项 - 健康主题样式 */
+.category-item {
+  margin-bottom: var(--space-xl);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--border-tertiary);
+  transition: all var(--transition-base);
 }
 
-.blood-sugar-icon::before {
-  background: linear-gradient(135deg, #3b82f6, #60a5fa);
+.category-item:first-child {
+  border-top: none;
+  padding-top: 0;
 }
 
-.heart-rate-icon {
-  background-color: rgba(239, 68, 68, 0.15);
-  color: #ef4444;
-  border: 1px solid rgba(239, 68, 68, 0.2);
-}
-
-.heart-rate-icon::before {
-  background: linear-gradient(135deg, #ef4444, #f87171);
-}
-
-.overview-content {
-  flex: 1;
-}
-
-.overview-title {
-  font-size: 15px;
-  color: var(--text-secondary);
-  margin-bottom: 6px;
-  font-weight: 500;
-}
-
-.overview-value {
-  font-size: 24px;
+.category-title {
+  font-size: var(--font-size-lg);
   font-weight: 600;
   color: var(--text-primary);
-  margin-bottom: 6px;
-  line-height: 1.2;
+  margin-bottom: var(--space-base);
+  padding-bottom: var(--space-xs);
+  border-bottom: 2px solid var(--border-secondary);
+  display: inline-block;
+  transition: all var(--transition-base);
+  background: linear-gradient(to right, var(--primary-light), transparent);
+  padding-left: var(--space-sm);
+  padding-right: var(--space-sm);
+  border-radius: 2px 2px 0 0;
 }
 
-.overview-date {
-  font-size: 13px;
-  color: var(--text-secondary);
-  opacity: 0.8;
-}
-
-.overview-tag {
-  margin-left: auto;
-}
-
-/* 区域标题 */
-.health-records-section,
-.health-trends-section {
-  margin-bottom: 30px;
-}
-
-.section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-  gap: 15px;
-}
-
-.section-header-left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.section-title {
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin: 0;
-  position: relative;
-}
-
-.section-line {
-  width: 40px;
-  height: 2px;
-  background-color: var(--primary-color);
-  border-radius: 1px;
-}
-
-.section-header-right {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-/* 选择器样式 */
-.data-select,
-.chart-select {
-  border-radius: 6px !important;
-  border-color: var(--border-color) !important;
-  transition: all 0.3s ease !important;
-}
-
-.data-select:hover,
-.chart-select:hover {
-  border-color: var(--primary-color) !important;
-  box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.1) !important;
-}
-
-/* 添加按钮 */
-.add-btn {
-  background-color: var(--primary-color) !important;
-  border-color: var(--primary-color) !important;
-  border-radius: 6px !important;
-  transition: all 0.3s ease !important;
-}
-
-.add-btn:hover {
-  background-color: var(--primary-dark) !important;
-  border-color: var(--primary-dark) !important;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.3);
-}
-
-.add-icon {
-  margin-right: 4px;
-}
-
-/* 表格卡片 */
-.records-table-card,
-.trends-chart-card {
-  border-radius: 12px !important;
-  border: none !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
-  overflow: hidden;
-}
-
-.table-container {
-  padding: 10px;
-}
-
-.table-row-hover {
-  transition: background-color 0.2s ease;
-}
-
-.el-table__row:hover {
-  background-color: var(--hover-color) !important;
-}
-
-.table-value {
-  font-weight: 500;
-  color: var(--text-primary);
-}
-
-.status-tag {
-  border-radius: 12px !important;
-  padding: 2px 8px !important;
-  font-size: 12px !important;
-}
-
-/* 操作按钮 */
-.operation-btn {
-  transition: all 0.2s ease !important;
-  border-radius: 4px !important;
-  padding: 4px 8px !important;
-}
-
-.edit-btn:hover {
-  color: var(--primary-dark) !important;
-  background-color: rgba(64, 158, 255, 0.1) !important;
-}
-
-.delete-btn:hover {
-  color: var(--danger-color) !important;
-  background-color: rgba(245, 108, 108, 0.1) !important;
-}
-
-/* 分页 */
-.pagination-container {
-  margin-top: 25px;
-  display: flex;
-  justify-content: flex-end;
-  padding: 15px;
-  background-color: var(--card-bg);
-  border-top: 1px solid var(--border-color);
-}
-
-.custom-pagination {
-  --el-pagination-color: var(--text-secondary);
-  --el-pagination-hover-color: var(--primary-color);
-  --el-pagination-active-color: var(--primary-color);
-  --el-pagination-active-bg-color: rgba(64, 158, 255, 0.1);
-}
-
-/* 图表容器 */
-.chart-container {
-  width: 100%;
-  height: 420px;
-  position: relative;
-}
-
-.chart-placeholder {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: rgba(255, 255, 255, 0.5);
-}
-
-.chart-loading {
-  --el-loading-spinner-color: var(--primary-color);
-  --el-loading-text-color: var(--text-secondary);
-}
-
-.chart-content {
-  width: 100%;
-  height: 100%;
+.category-title:hover {
+  color: var(--primary-color);
+  border-bottom-color: var(--primary-color);
+  transform: translateY(-1px);
 }
 
 /* 响应式设计 */
-@media (max-width: 1200px) {
-  .health-overview {
-    gap: 20px;
-    padding: 20px;
-  }
-  
-  .overview-item {
-    min-width: 250px;
-    padding: 18px;
-  }
-}
-
 @media (max-width: 768px) {
-  .health-record {
-    padding: 16px;
+  .mall-home {
+    padding: var(--space-base);
+    background-size: 20px 20px;
   }
   
-  .page-header {
-    margin-bottom: 25px;
+  .top-decoration {
+    margin: calc(var(--space-base) * -1) calc(var(--space-base) * -1) var(--space-base) calc(var(--space-base) * -1);
+  }
+  
+  .search-content {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-sm);
+  }
+  
+  .search-input,
+  .category-select {
+    width: 100%;
+    max-width: none;
+    border-color: var(--border-primary);
+  }
+  
+  .price-rating-container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-xs);
+  }
+  
+  .product-name {
+    min-height: auto;
+    -webkit-line-clamp: 1;
+    color: var(--text-primary);
+  }
+  
+  .product-image {
+    height: 150px;
+  }
+  
+  .product-image-container {
+    min-height: 180px;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-sm);
   }
   
   .header-title {
-    font-size: 24px;
+    font-size: var(--font-size-xl);
+    color: var(--primary-color);
   }
   
-  .health-overview {
-    flex-direction: column;
-    gap: 16px;
-    padding: 16px;
-  }
-  
-  .overview-item {
-    min-width: auto;
-    padding: 16px;
-  }
-  
-  .overview-icon {
-    width: 56px;
-    height: 56px;
-    font-size: 24px;
-  }
-  
-  .overview-value {
-    font-size: 22px;
+  .section-title {
+    font-size: var(--font-size-lg);
+    color: var(--primary-color);
   }
   
   .section-header {
     flex-direction: column;
-    align-items: stretch;
-    gap: 15px;
+    align-items: flex-start;
+    gap: var(--space-xs);
   }
   
-  .section-header-left {
-    justify-content: center;
-  }
-  
-  .section-title {
-    font-size: 18px;
-    text-align: center;
-  }
-  
-  .chart-container {
-    height: 350px;
+  .section-line {
+    width: 100%;
   }
 }
 
-@media (max-width: 480px) {
-  .health-record {
-    padding: 12px;
+@media (min-width: 769px) and (max-width: 1024px) {
+  .action-buttons {
+    flex-wrap: wrap;
+    gap: var(--space-sm);
   }
   
-  .page-header {
-    margin-bottom: 20px;
+  .search-content {
+    flex-wrap: wrap;
+    gap: var(--space-sm);
   }
-  
-  .header-title {
-    font-size: 22px;
+}
+
+/* 动画效果 - 健康主题 */
+.product-card {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
-  
-  .header-desc {
-    font-size: 14px;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
-  
-  .overview-item {
-    flex-direction: column;
-    text-align: center;
-    gap: 12px;
-    padding: 15px;
-  }
-  
-  .overview-tag {
-    margin-left: 0;
-    margin-top: 8px;
-  }
-  
-  .overview-icon {
-    width: 50px;
-    height: 50px;
-    font-size: 22px;
-  }
-  
-  .overview-value {
-    font-size: 20px;
-  }
-  
-  .chart-container {
-    height: 280px;
-  }
-  
-  .el-table {
-    font-size: 13px;
-  }
-  
-  .el-table-column {
-    width: auto !important;
-  }
+}
+
+/* 页面底部 - 健康主题样式 */
+.page-footer {
+  margin-top: var(--space-2xl);
+  text-align: center;
+  padding: var(--space-lg) 0;
+  border-top: 1px solid var(--border-tertiary);
+  background-color: var(--bg-secondary);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  margin-bottom: 0;
+  background-image: linear-gradient(to bottom, transparent, var(--primary-light) 100%);
+  background-size: 100% 200%;
+  background-position: 0 0;
+  transition: background-position 0.3s ease;
+}
+
+.page-footer:hover {
+  background-position: 0 100%;
+}
+
+.footer-text {
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  position: relative;
+  z-index: 1;
 }
 </style>
