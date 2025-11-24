@@ -109,7 +109,7 @@
   --transition-fast: 0.1s ease;
   --transition-base: 0.2s ease;
   --transition-slow: 0.3s ease;
-  --transition-theme: 0.35s ease-in-out;
+  --transition-theme: 0.3s ease-in-out;
 
   /* 通用渐变变量 */
   --gradient-primary: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);

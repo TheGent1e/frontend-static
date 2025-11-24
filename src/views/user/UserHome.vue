@@ -813,6 +813,11 @@ const showAllServices = () => {
   color: var(--text-primary);
 }
 
+/* 仅在暗色模式下将页面容器背景设为 #182131 */
+:deep([data-theme="dark"] .user-home) {
+  background-color: #182131 !important;
+}
+
 /* ==========================================
    二、公共组件样式（页面内复用的基础组件）
    ========================================== */
@@ -1371,7 +1376,7 @@ const showAllServices = () => {
 
 /* 2. 对话框主体容器 */
 :deep(.dark-tech-dialog .el-dialog) {
-  background: var(--el-bg-color) !important;
+  background: #182131 !important;
   border: 1px solid var(--el-border-color-hover) !important;
   border-radius: 20px !important;
   box-shadow: 
@@ -1407,7 +1412,7 @@ const showAllServices = () => {
 :deep(.dark-tech-dialog .el-dialog__header),
 :deep(.dark-tech-dialog .el-dialog__footer) {
   border-color: var(--el-border-color) !important;
-  background: rgba(15, 23, 42, 0.9) !important;
+  background: #182131 !important;
   color: var(--text-primary) !important;
 }
 

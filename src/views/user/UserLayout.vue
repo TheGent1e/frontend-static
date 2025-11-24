@@ -118,7 +118,28 @@ const handleLogout = () => {
 
 .welcome-text {
   font-size: 16px;
+  color: var(--text-primary);
+  /* 使用CSS变量确保在浅色模式下有良好对比度 */
+  transition: color 0.3s ease;
+  /* 添加过渡效果使颜色变化更平滑 */
+}
+
+/* 深色模式下保持白色文字 */
+[data-theme="dark"] .welcome-text {
   color: white;
+}
+
+/* 悬停状态效果 */
+.welcome-text:hover {
+  color: var(--primary-color);
+  /* 悬停时显示主题色，增强交互反馈 */
+  cursor: default;
+}
+
+/* 激活状态效果 */
+.welcome-text:active {
+  color: var(--primary-dark);
+  /* 激活时使用稍深的主题色 */
 }
 
 /* 主内容区域 */

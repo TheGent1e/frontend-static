@@ -311,6 +311,9 @@ onMounted(() => {
   background-attachment: scroll; /* 改为scroll以避免在不同浏览器中固定背景的兼容性问题 */
   background-position: top left;
   background-repeat: repeat;
+  /* 限制最大宽度并居中 */
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 /* 顶部装饰条 - 使用健康主题绿色 */

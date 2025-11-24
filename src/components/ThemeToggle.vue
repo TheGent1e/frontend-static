@@ -9,11 +9,17 @@
       circle
       size="small"
     />
+    <el-select v-model="mode" size="small" class="theme-mode-select">
+      <el-option label="自动" value="auto" />
+      <el-option label="浅色" value="light" />
+      <el-option label="深色" value="dark" />
+    </el-select>
+    <el-color-picker v-model="primaryColor" size="small" class="theme-color-picker" />
   </div>
 </template>
 
 <script setup>
-import { computed, onMounted, onUnmounted } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useThemeStore } from '@/stores/theme'
 
 // 获取主题store实例
@@ -42,18 +48,30 @@ const handleThemeChanged = () => {
   // 这里可以添加主题变化时的额外逻辑
 }
 
-// 组件挂载时
 onMounted(() => {
-  // 监听存储变化
   window.addEventListener('storage', handleStorageChange)
-  // 监听主题变化事件
   window.addEventListener('themeChanged', handleThemeChanged)
 })
 
-// 组件卸载时
 onUnmounted(() => {
   window.removeEventListener('storage', handleStorageChange)
   window.removeEventListener('themeChanged', handleThemeChanged)
+})
+
+const mode = ref(themeStore.mode)
+watch(mode, (m) => {
+  themeStore.setMode(m)
+})
+
+const readPrimary = () => {
+  const s = window.getComputedStyle(document.documentElement)
+  const v = s.getPropertyValue('--primary-color').trim()
+  return v || '#4CAF50'
+}
+
+const primaryColor = ref(readPrimary())
+watch(primaryColor, (c) => {
+  themeStore.setThemeColors({ '--primary-color': c })
 })
 </script>
 
@@ -63,6 +81,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
 }
 
 /* 主题切换按钮样式 - 增强辨识度 */
@@ -78,6 +97,14 @@ onUnmounted(() => {
   min-width: 36px;
   height: 36px;
   opacity: 0.9;
+}
+
+.theme-mode-select {
+  width: 96px;
+}
+
+.theme-color-picker {
+  --el-color-picker-size: 24px;
 }
 
 /* 悬停状态 - 增强交互反馈 */

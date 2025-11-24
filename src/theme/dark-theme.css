@@ -43,7 +43,7 @@
   --bg-color-page: var(--bg-primary);
 
   /* 边框颜色 - 深色背景下的边框需要更加微妙 */
-  --border-primary: #455A64;
+  --border-primary: #151523;
   --border-secondary: #37474F;
   --border-tertiary: #263238;
   --border-disabled: #37474F;

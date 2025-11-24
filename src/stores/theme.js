@@ -2,9 +2,9 @@ import { defineStore } from 'pinia'
 
 export const useThemeStore = defineStore('theme', {
   state: () => ({
-    // 当前主题状态
     isDark: false,
-    // 主题配置对象
+    mode: 'auto',
+    customColors: {},
     themeConfig: {
       transitionDuration: '0.3s',
       transitionTimingFunction: 'ease'
@@ -12,10 +12,8 @@ export const useThemeStore = defineStore('theme', {
   }),
   
   getters: {
-    // 获取当前主题名称
     currentTheme: (state) => state.isDark ? 'dark' : 'light',
     
-    // 获取主题CSS变量（用于调试或特殊情况）
     getCssVars: () => {
       const vars = {}
       const style = window.getComputedStyle(document.documentElement)
@@ -29,83 +27,114 @@ export const useThemeStore = defineStore('theme', {
   },
   
   actions: {
-    // 初始化主题
     initTheme() {
-      // 从本地存储读取主题偏好
-      const savedTheme = localStorage.getItem('theme')
+      const savedMode = localStorage.getItem('themeMode')
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-      
-      // 如果有保存的主题设置，则使用保存的设置，否则根据系统偏好
-      const shouldUseDark = savedTheme ? savedTheme === 'dark' : prefersDark
-      
-      // 应用主题
+      this.mode = savedMode === 'light' || savedMode === 'dark' ? savedMode : 'auto'
+      const shouldUseDark = this.mode === 'auto' ? prefersDark : this.mode === 'dark'
       this.applyTheme(shouldUseDark)
-      
-      // 监听系统主题变化
+      this.applySavedColors()
       this.setupMediaQueryListener()
     },
     
-    // 应用主题
     applyTheme(dark) {
       this.isDark = dark
       
-      // 设置data-theme属性
       if (dark) {
         document.documentElement.setAttribute('data-theme', 'dark')
       } else {
         document.documentElement.setAttribute('data-theme', 'light')
       }
       
-      // 保存到本地存储
-      localStorage.setItem('theme', dark ? 'dark' : 'light')
+      if (this.mode !== 'auto') {
+        localStorage.setItem('themeMode', dark ? 'dark' : 'light')
+      }
       
-      // 触发自定义事件，通知应用各部分主题已变更
       window.dispatchEvent(new CustomEvent('themeChanged', {
         detail: { isDark: dark }
       }))
     },
     
-    // 切换主题
     toggleTheme() {
-      this.applyTheme(!this.isDark)
+      this.mode = !this.isDark ? 'dark' : 'light'
+      localStorage.setItem('themeMode', this.mode)
+      this.applyTheme(this.mode === 'dark')
     },
     
-    // 设置系统主题变化监听器
     setupMediaQueryListener() {
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
       const handleChange = (e) => {
-        // 只在没有用户自定义设置时跟随系统变化
-        if (!localStorage.getItem('theme')) {
+        if (this.mode === 'auto') {
           this.applyTheme(e.matches)
         }
       }
       
       mediaQuery.addEventListener('change', handleChange)
       
-      // 保存监听器引用，以便在需要时移除
       this._mediaQueryListener = handleChange
     },
     
-    // 更新主题配置
     updateConfig(newConfig) {
       this.themeConfig = { ...this.themeConfig, ...newConfig }
     },
     
-    // 手动设置特定CSS变量（用于高级自定义）
     setCssVariable(name, value) {
       document.documentElement.style.setProperty(name, value)
     },
     
-    // 重置为默认主题
     resetTheme() {
       localStorage.removeItem('theme')
+      localStorage.removeItem('themeMode')
+      localStorage.removeItem('themeColors')
+      this.customColors = {}
+      Object.keys(this.getCssVars()).forEach(key => {
+        if (document.documentElement.style.getPropertyValue(key)) {
+          document.documentElement.style.setProperty(key, '')
+        }
+      })
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+      this.mode = 'auto'
       this.applyTheme(prefersDark)
     },
     
-    // 清理
+    setMode(mode) {
+      this.mode = mode
+      localStorage.setItem('themeMode', mode)
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+      const shouldUseDark = mode === 'auto' ? prefersDark : mode === 'dark'
+      this.applyTheme(shouldUseDark)
+    },
+
+    setThemeColors(colors) {
+      this.customColors = { ...this.customColors, ...colors }
+      Object.entries(colors).forEach(([k, v]) => {
+        this.setCssVariable(k, v)
+      })
+      localStorage.setItem('themeColors', JSON.stringify(this.customColors))
+    },
+
+    clearCustomColors() {
+      Object.keys(this.customColors).forEach(k => {
+        document.documentElement.style.setProperty(k, '')
+      })
+      this.customColors = {}
+      localStorage.removeItem('themeColors')
+    },
+
+    applySavedColors() {
+      try {
+        const saved = localStorage.getItem('themeColors')
+        if (saved) {
+          const obj = JSON.parse(saved)
+          this.customColors = obj
+          Object.entries(obj).forEach(([k, v]) => {
+            this.setCssVariable(k, v)
+          })
+        }
+      } catch {}
+    },
+
     $dispose() {
-      // 移除系统主题监听器
       if (this._mediaQueryListener) {
         const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
         mediaQuery.removeEventListener('change', this._mediaQueryListener)
@@ -114,7 +143,6 @@ export const useThemeStore = defineStore('theme', {
   }
 })
 
-// 提供全局方法，保持向后兼容
 if (!window.toggleTheme) {
   window.toggleTheme = () => {
     const themeStore = useThemeStore()
