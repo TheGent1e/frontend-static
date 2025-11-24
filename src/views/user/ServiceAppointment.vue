@@ -526,16 +526,21 @@ onMounted(() => {
   }
   
   .back-home-btn {
-    background: transparent;
-    color: #3b82f6;
-    border: 1px solid #3b82f6;
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 500;
     transition: all 0.3s ease;
   }
   
   .back-home-btn:hover {
-    background-color: rgba(59, 130, 246, 0.1);
-    color: #2563eb;
-    border-color: #2563eb;
+    background-color: var(--primary-hover) !important;
+    border-color: var(--primary-hover) !important;
+    color: white !important;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
   }
 
 .search-filter-card {

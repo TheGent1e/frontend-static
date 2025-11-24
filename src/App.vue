@@ -8,11 +8,38 @@
 
 <script setup>
 // 使用Vue 3的组合式API (Composition API)
+import { onMounted, onUnmounted } from 'vue'
+import { initTheme } from './theme/controller'
+import { useThemeStore } from './stores/theme'
+
 // 定义组件名称
 const name = 'App'
+
+// 获取主题store实例
+let themeStore
+
+// 在组件挂载时初始化主题
+onMounted(() => {
+  initTheme()
+})
+
+// 组件卸载时清理资源
+onUnmounted(() => {
+  try {
+    themeStore = useThemeStore()
+    if (themeStore && themeStore.$dispose) {
+      themeStore.$dispose()
+    }
+  } catch {}
+})
 </script>
 
 <style>
+/* 引入主题文件 */
+@import './assets/styles/theme.css';
+@import './theme/light-theme.css';
+@import './theme/dark-theme.css';
+
 /* 全局样式重置 */
 * {
   margin: 0;

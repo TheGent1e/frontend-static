@@ -109,16 +109,21 @@
   --transition-fast: 0.1s ease;
   --transition-base: 0.2s ease;
   --transition-slow: 0.3s ease;
+  --transition-theme: 0.3s ease-in-out;
 
-  /* 健康商城特定变量 */
-  --mall-gradient-primary: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
-  --mall-gradient-secondary: linear-gradient(135deg, #E8F5E9 0%, #FFFFFF 100%);
-  --mall-gradient-tertiary: linear-gradient(135deg, #F1F8E9 0%, #FFFFFF 100%);
-  --mall-text-price: #F44336;
-  --mall-text-original-price: #78909C;
-  --mall-tag-new: #66BB6A;
-  --mall-tag-hot: #EF5350;
-  --mall-tag-discount: #FFA726;
+  /* 通用渐变变量 */
+  --gradient-primary: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+  --gradient-secondary: linear-gradient(135deg, #E8F5E9 0%, #FFFFFF 100%);
+  --gradient-tertiary: linear-gradient(135deg, #F1F8E9 0%, #FFFFFF 100%);
+
+  /* 通用标签颜色 */
+  --tag-new: var(--success-color);
+  --tag-hot: var(--error-color);
+  --tag-discount: var(--warning-color);
+
+  /* 价格相关颜色 */
+  --text-price: #F44336;
+  --text-original-price: #78909C;
 
   /* 健康主题特定变量 */
   --health-card-shadow: 0 4px 12px rgba(76, 175, 80, 0.1);
@@ -139,4 +144,41 @@
 /* 深色模式预留 */
 [data-theme="dark"] {
   /* 深色模式变量将在后续实现 */
+}
+
+/* 全局主题过渡效果 */
+:root,
+[data-theme="dark"] {
+  transition:
+    --primary-color var(--transition-theme),
+    --text-primary var(--transition-theme),
+    --text-regular var(--transition-theme),
+    --bg-primary var(--transition-theme),
+    --bg-secondary var(--transition-theme),
+    --bg-tertiary var(--transition-theme),
+    --border-primary var(--transition-theme);
+}
+
+/* 应用于所有元素的主题过渡 */
+*,
+*::before,
+*::after {
+  transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+  transition-duration: var(--transition-theme);
+  transition-timing-function: ease-in-out;
+}
+
+/* 特殊处理不需要过渡的元素 */
+html {
+  /* 禁止HTML根元素的过渡，避免闪烁 */
+  transition: none;
+}
+
+/* 确保图片和一些不需要过渡的元素 */
+img,
+video,
+canvas,
+input[type="checkbox"],
+input[type="radio"] {
+  transition: none;
 }

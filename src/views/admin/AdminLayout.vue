@@ -10,12 +10,16 @@
         <span class="welcome-text">欢迎，{{ userStore.getUserName }}</span>
       </div>
       
+      <!-- ThemeToggle按钮精确定位至header容器的垂直和水平居中位置 -->
+      <ThemeToggle class="theme-toggle-centered" />
+      
       <div class="navbar-right">
         <el-button 
           type="primary" 
           plain 
           @click="handleLogout"
           icon="el-icon-switch-button"
+          style="margin-left: 10px"
         >
           退出登录
         </el-button>
@@ -77,6 +81,7 @@ import { computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useUserStore } from '../../store/user'
+import ThemeToggle from '../../components/ThemeToggle.vue'
 
 // 定义组件名称
 const name = 'AdminLayout'
@@ -131,6 +136,13 @@ const handleLogout = () => {
   background-color: #f0f2f5;
 }
 
+.navbar-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+}
+
 /* 顶部导航栏 */
   .top-navbar {
     display: flex;
@@ -139,13 +151,31 @@ const handleLogout = () => {
     height: 60px;
     padding: 0 20px;
     background-color: #ffffff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid var(--primary-light);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     z-index: 3000; /* 提高z-index值，确保高于消息提示框 */
     /* 添加fixed定位使其置顶 */
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+  }
+
+  /* 深色模式下的header背景 */
+  [data-theme="dark"] .top-navbar {
+    background-color: #1e293b;
+    border-bottom: 1px solid var(--primary-light);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  }
+
+  /* ThemeToggle按钮精确定位至header容器的垂直和水平居中 */
+  .theme-toggle-centered {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 3100; /* 确保按钮在其他元素之上 */
   }
 
 .navbar-left .logo {
