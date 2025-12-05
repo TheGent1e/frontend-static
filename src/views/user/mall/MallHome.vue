@@ -152,8 +152,239 @@ const cartItemsCount = ref(0)
 
 // 模拟商品数据
 const allProducts = ref([
+  // 膳食补充剂
   {
     id: 1,
+    name: '维生素C咀嚼片',
+    price: 59.00,
+    image: '/images/products/vitamin-c.jpg',
+    category: 'supplements',
+    rating: 4.8,
+    reviewCount: 234,
+    isNew: false,
+    isDiscount: true
+  },
+  {
+    id: 2,
+    name: '深海鱼油胶囊',
+    price: 129.00,
+    image: '/images/products/fish-oil.jpg',
+    category: 'supplements',
+    rating: 4.7,
+    reviewCount: 189,
+    isNew: false,
+    isDiscount: false
+  },
+  {
+    id: 3,
+    name: '乳清蛋白粉',
+    price: 299.00,
+    image: '/images/products/whey-protein.jpg',
+    category: 'supplements',
+    rating: 4.9,
+    reviewCount: 345,
+    isNew: true,
+    isDiscount: false
+  },
+  {
+    id: 4,
+    name: '益生菌粉',
+    price: 89.00,
+    image: '/images/products/probiotics.jpg',
+    category: 'supplements',
+    rating: 4.6,
+    reviewCount: 156,
+    isNew: false,
+    isDiscount: false
+  },
+  
+  // 家用医疗设备
+  {
+    id: 5,
+    name: '智能血压计',
+    price: 299.00,
+    image: '/images/products/blood-pressure.jpg',
+    category: 'medical-devices',
+    rating: 4.8,
+    reviewCount: 156,
+    isNew: true,
+    isDiscount: false
+  },
+  {
+    id: 6,
+    name: '血糖仪套装',
+    price: 199.00,
+    image: '/images/products/blood-sugar.jpg',
+    category: 'medical-devices',
+    rating: 4.6,
+    reviewCount: 89,
+    isNew: false,
+    isDiscount: true
+  },
+  {
+    id: 7,
+    name: '电子体温计',
+    price: 89.00,
+    image: '/images/products/thermometer.jpg',
+    category: 'medical-devices',
+    rating: 4.4,
+    reviewCount: 112,
+    isNew: false,
+    isDiscount: true
+  },
+  {
+    id: 8,
+    name: '雾化器',
+    price: 399.00,
+    image: '/images/products/nebulizer.jpg',
+    category: 'medical-devices',
+    rating: 4.5,
+    reviewCount: 78,
+    isNew: true,
+    isDiscount: false
+  },
+  
+  // 健康食品
+  {
+    id: 9,
+    name: '有机核桃',
+    price: 69.00,
+    image: '/images/products/walnuts.jpg',
+    category: 'health-food',
+    rating: 4.7,
+    reviewCount: 123,
+    isNew: false,
+    isDiscount: false
+  },
+  {
+    id: 10,
+    name: '低糖燕麦片',
+    price: 49.00,
+    image: '/images/products/oatmeal.jpg',
+    category: 'health-food',
+    rating: 4.6,
+    reviewCount: 198,
+    isNew: false,
+    isDiscount: true
+  },
+  {
+    id: 11,
+    name: '蜂蜜礼盒',
+    price: 159.00,
+    image: '/images/products/honey.jpg',
+    category: 'health-food',
+    rating: 4.9,
+    reviewCount: 89,
+    isNew: false,
+    isDiscount: false
+  },
+  {
+    id: 12,
+    name: '益生菌酸奶',
+    price: 39.00,
+    image: '/images/products/yogurt.jpg',
+    category: 'health-food',
+    rating: 4.5,
+    reviewCount: 210,
+    isNew: true,
+    isDiscount: false
+  },
+  
+  // 运动健康
+  {
+    id: 13,
+    name: '瑜伽垫',
+    price: 89.00,
+    image: '/images/products/yoga-mat.jpg',
+    category: 'sports-health',
+    rating: 4.7,
+    reviewCount: 145,
+    isNew: false,
+    isDiscount: false
+  },
+  {
+    id: 14,
+    name: '智能手环',
+    price: 199.00,
+    image: '/images/products/smart-band.jpg',
+    category: 'sports-health',
+    rating: 4.8,
+    reviewCount: 267,
+    isNew: true,
+    isDiscount: false
+  },
+  {
+    id: 15,
+    name: '筋膜枪',
+    price: 299.00,
+    image: '/images/products/fascia-gun.jpg',
+    category: 'sports-health',
+    rating: 4.6,
+    reviewCount: 134,
+    isNew: false,
+    isDiscount: true
+  },
+  {
+    id: 16,
+    name: '哑铃套装',
+    price: 159.00,
+    image: '/images/products/dumbbells.jpg',
+    category: 'sports-health',
+    rating: 4.5,
+    reviewCount: 98,
+    isNew: false,
+    isDiscount: false
+  },
+  
+  // 个人护理
+  {
+    id: 17,
+    name: '电动牙刷',
+    price: 129.00,
+    image: '/images/products/electric-toothbrush.jpg',
+    category: 'personal-care',
+    rating: 4.8,
+    reviewCount: 201,
+    isNew: false,
+    isDiscount: true
+  },
+  {
+    id: 18,
+    name: '护眼仪',
+    price: 199.00,
+    image: '/images/products/eye-massager.jpg',
+    category: 'personal-care',
+    rating: 4.7,
+    reviewCount: 156,
+    isNew: true,
+    isDiscount: false
+  },
+  {
+    id: 19,
+    name: '冲牙器',
+    price: 159.00,
+    image: '/images/products/water-flosser.jpg',
+    category: 'personal-care',
+    rating: 4.6,
+    reviewCount: 178,
+    isNew: false,
+    isDiscount: false
+  },
+  {
+    id: 20,
+    name: '蒸汽眼罩',
+    price: 39.00,
+    image: '/images/products/steam-eye-mask.jpg',
+    category: 'personal-care',
+    rating: 4.5,
+    reviewCount: 234,
+    isNew: false,
+    isDiscount: true
+  },
+  
+  // 血压监测
+  {
+    id: 21,
     name: '智能血压计',
     price: 299.00,
     image: '/images/products/blood-pressure.jpg',
@@ -164,7 +395,20 @@ const allProducts = ref([
     isDiscount: false
   },
   {
-    id: 2,
+    id: 22,
+    name: '臂式血压计',
+    price: 199.00,
+    image: '/images/products/arm-blood-pressure.jpg',
+    category: 'blood-pressure',
+    rating: 4.6,
+    reviewCount: 123,
+    isNew: false,
+    isDiscount: false
+  },
+  
+  // 血糖监测
+  {
+    id: 23,
     name: '血糖仪套装',
     price: 199.00,
     image: '/images/products/blood-sugar.jpg',
@@ -175,7 +419,20 @@ const allProducts = ref([
     isDiscount: true
   },
   {
-    id: 3,
+    id: 24,
+    name: '血糖试纸',
+    price: 89.00,
+    image: '/images/products/test-strips.jpg',
+    category: 'blood-sugar',
+    rating: 4.9,
+    reviewCount: 189,
+    isNew: false,
+    isDiscount: false
+  },
+  
+  // 心率监测
+  {
+    id: 25,
     name: '智能心率手环',
     price: 159.00,
     image: '/images/products/heart-rate.jpg',
@@ -186,69 +443,28 @@ const allProducts = ref([
     isDiscount: false
   },
   {
-    id: 4,
-    name: '老年人保健枕',
-    price: 129.00,
-    image: '/images/products/pillow.jpg',
-    category: 'health-care',
-    rating: 4.5,
-    reviewCount: 67,
-    isNew: false,
-    isDiscount: false
-  },
-  {
-    id: 5,
-    name: '电子体温计',
-    price: 89.00,
-    image: '/images/products/thermometer.jpg',
-    category: 'medical-device',
-    rating: 4.4,
-    reviewCount: 112,
-    isNew: false,
-    isDiscount: true
-  },
-  {
-    id: 6,
-    name: '家用血糖仪试纸',
-    price: 158.00,
-    image: '/images/products/test-strips.jpg',
-    category: 'blood-sugar',
-    rating: 4.9,
-    reviewCount: 189,
-    isNew: false,
-    isDiscount: false
-  },
-  {
-    id: 7,
-    name: '智能体重秤',
-    price: 199.00,
-    image: '/images/products/scale.jpg',
-    category: 'health-care',
-    rating: 4.6,
-    reviewCount: 98,
+    id: 26,
+    name: '心率监测手表',
+    price: 399.00,
+    image: '/images/products/heart-rate-watch.jpg',
+    category: 'heart-rate',
+    rating: 4.8,
+    reviewCount: 167,
     isNew: true,
-    isDiscount: false
-  },
-  {
-    id: 8,
-    name: '按摩器套装',
-    price: 299.00,
-    image: '/images/products/massager.jpg',
-    category: 'health-care',
-    rating: 4.7,
-    reviewCount: 76,
-    isNew: false,
     isDiscount: false
   }
 ])
 
 // 产品分类
 const productCategories = ref([
+  { id: 'supplements', name: '膳食补充剂' },
+  { id: 'medical-devices', name: '家用医疗设备' },
+  { id: 'health-food', name: '健康食品' },
+  { id: 'sports-health', name: '运动健康' },
+  { id: 'personal-care', name: '个人护理' },
   { id: 'blood-pressure', name: '血压监测' },
   { id: 'blood-sugar', name: '血糖监测' },
-  { id: 'heart-rate', name: '心率监测' },
-  { id: 'health-care', name: '保健产品' },
-  { id: 'medical-device', name: '医疗器械' }
+  { id: 'heart-rate', name: '心率监测' }
 ])
 
 // 计算属性：精选产品
@@ -299,16 +515,44 @@ onMounted(() => {
 })
 </script>
 
+<style>
+/* 应用UserHome页面的颜色主题 */
+:root {
+  /* 全局深色科技感变量（保留原有基调，提亮文字） */
+  --bg-dark: #0f172a; /* 页面主背景（原深色不变，保证科技感） */
+  --bg-darker: #020617; /* 深层背景（原不变，增强层次） */
+  --text-primary: #ffffff; /* 提亮为纯白！核心文字更醒目 */
+  --text-secondary: #e0f2fe; /* 次要文字提亮为亮浅蓝 */
+  --border-glass: rgba(138, 205, 236, 0.4); /* 边框透明度提高，更亮更醒目 */
+  --glow-blue: 0 0 18px rgba(14, 165, 233, 0.7); /* 蓝光更亮，增强科技感 */
+  --glow-green: 0 0 18px rgba(16, 185, 129, 0.7); /* 绿光同步提亮 */
+  
+  /* Element UI 全局覆盖变量（同步优化，保持蓝紫协调） */
+  --el-bg-color: rgb(15, 23, 42); /* 组件基础背景（深色） */
+  --el-text-color-primary: #38bdf8; /* 组件主文字（亮天蓝） */
+  --el-border-color: rgba(14, 165, 233, 0.5); /* 边框透明度提高，更亮 */
+  --el-color-primary: #38bdf8; /* 主色调（亮天蓝） */
+  --el-text-color-regular: #38bdf8; /* table文字颜色 */
+  /* 补充缺失变量，优化细节 */
+  --el-text-color-secondary: #e0f2fe; /* 次要文字同步提亮 */
+  --el-text-color-placeholder: #93c5fd; /* 占位文字提亮，避免过暗 */
+  --el-border-color-hover: rgba(14, 165, 233, 0.8); /* hover 边框更亮 */
+  /* 新增：输入框专属深色背景（核心优化） */
+  --el-input-bg: #0f172a; /* 输入框/下拉框深色背景，比组件背景更深 */
+  --el-input-hover-bg: #1e293b; /* 输入框hover背景 */
+}
+</style>
+
 <style scoped>
-/* 导入主题变量 */
+/* 健康商城页面样式 */
 .mall-home {
-  padding: var(--space-lg);
-  background-color: var(--bg-primary); /* 使用主背景色替代辅助背景色 */
+  padding: 20px;
+  background-color: var(--bg-dark);
   min-height: 100vh;
   /* 简化背景纹理，确保在各环境下显示一致 */
-  background-image: radial-gradient(var(--primary-light) 1px, transparent 1px);
+  background-image: radial-gradient(var(--el-color-primary) 1px, transparent 1px);
   background-size: 30px 30px;
-  background-attachment: scroll; /* 改为scroll以避免在不同浏览器中固定背景的兼容性问题 */
+  background-attachment: scroll;
   background-position: top left;
   background-repeat: repeat;
   /* 限制最大宽度并居中 */
@@ -318,22 +562,23 @@ onMounted(() => {
 
 /* 顶部装饰条 - 使用健康主题绿色 */
 .top-decoration {
-  background: var(--health-gradient-primary);
+  background: linear-gradient(90deg, var(--el-color-primary), #0284c7);
   height: 4px;
-  margin: calc(var(--space-lg) * -1) calc(var(--space-lg) * -1) var(--space-lg) calc(var(--space-lg) * -1);
+  margin: -20px -20px 20px -20px;
   border-radius: 0 0 2px 2px;
-  box-shadow: 0 2px 6px rgba(76, 175, 80, 0.2);
+  box-shadow: 0 0 10px rgba(14, 165, 233, 0.5);
 }
 
 /* 页面标题区域 - 健康风格设计 */
 .page-header {
   text-align: center;
-  margin-bottom: var(--space-xl);
-  padding: var(--space-md) 0;
-  background-color: var(--bg-primary);
-  border-radius: var(--radius-md);
-  box-shadow: var(--health-card-shadow);
-  border: 1px solid var(--border-tertiary);
+  margin-bottom: 30px;
+  padding: 20px 0;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(22, 34, 51, 0.8));
+  border-radius: 16px;
+  border: 1px solid var(--border-glass);
+  box-shadow: var(--glow-blue);
+  backdrop-filter: blur(8px);
   position: relative;
   overflow: hidden;
 }
@@ -347,8 +592,8 @@ onMounted(() => {
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: var(--primary-light);
-  opacity: 0.2;
+  background: rgba(14, 165, 233, 0.2);
+  opacity: 0.6;
   z-index: 0;
 }
 
@@ -360,32 +605,33 @@ onMounted(() => {
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: var(--success-light);
-  opacity: 0.15;
+  background: rgba(16, 185, 129, 0.2);
+  opacity: 0.6;
   z-index: 0;
 }
 
 .header-title {
-  font-size: var(--font-size-2xl);
+  font-size: 28px;
   font-weight: 700;
-  color: var(--primary-color);
-  margin-bottom: var(--space-sm);
-  line-height: var(--line-height-lg);
+  color: var(--el-color-primary);
+  margin-bottom: 12px;
+  line-height: 1.2;
   position: relative;
   z-index: 1;
   /* 添加医疗风格的文字装饰 */
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);
+  text-shadow: 0 0 10px rgba(14, 165, 233, 0.5);
 }
 
 .header-desc {
-  font-size: var(--font-size-base);
+  font-size: 16px;
   /* 提高颜色对比度以符合WCAG标准（至少4.5:1） */
   color: var(--text-primary);
   /* 增加文本粗细以提高可读性 */
   font-weight: 500;
-  line-height: var(--line-height-base);
+  line-height: 1.6;
   position: relative;
   z-index: 1;
+  text-shadow: 0 0 5px rgba(14, 165, 233, 0.3);
 }
 
 /* 操作按钮区域 */
@@ -393,39 +639,39 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--space-lg);
+  margin-bottom: 20px;
   flex-wrap: wrap;
-  gap: var(--space-base);
+  gap: 16px;
 }
 
 .back-button {
-  background-color: var(--primary-color);
-  border-color: var(--primary-color);
-  color: white;
-  transition: all var(--transition-base);
+  background: linear-gradient(135deg, var(--el-color-primary), #0284c7) !important;
+  border: none !important;
+  color: white !important;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+  border-radius: 8px;
 }
 
 .back-button:hover {
-  background-color: var(--primary-hover) !important;
-  border-color: var(--primary-hover) !important;
-  color: white !important;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 20px rgba(14, 165, 233, 0.5) !important;
 }
 
 .cart-button {
-  background-color: var(--success-color);
-  border-color: var(--success-color);
+  background: linear-gradient(135deg, #10b981, #059669) !important;
+  border: none !important;
+  color: white !important;
   position: relative;
   overflow: hidden;
-  transition: all var(--transition-base);
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  border-radius: 8px;
 }
 
 .cart-button:hover {
-  background-color: var(--success-hover) !important;
-  border-color: var(--success-hover) !important;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5) !important;
 }
 
 /* 搜索和筛选区域 */

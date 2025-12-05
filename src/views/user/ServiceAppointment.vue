@@ -24,10 +24,18 @@
         <el-select v-model="serviceCategory" placeholder="选择服务分类" class="category-select">
           <el-option label="全部服务" value="all" />
           <el-option label="常规体检" value="physical" />
-          <el-option label="专家问诊" value="consultation" />
-          <el-option label="专科检查" value="specialist" />
+          <el-option label="专项体检" value="special-physical" />
+          <el-option label="高端体检" value="high-end-physical" />
+          <el-option label="图文问诊" value="text-consultation" />
+          <el-option label="视频问诊" value="video-consultation" />
+          <el-option label="电话问诊" value="phone-consultation" />
+          <el-option label="疫苗接种" value="vaccination" />
+          <el-option label="中医理疗" value="tcm-therapy" />
+          <el-option label="物理治疗" value="physical-therapy" />
+          <el-option label="康复理疗" value="rehabilitation" />
           <el-option label="健康评估" value="assessment" />
-          <el-option label="康复治疗" value="rehabilitation" />
+          <el-option label="体重管理" value="weight-management" />
+          <el-option label="慢病管理" value="chronic-disease" />
         </el-select>
         <el-date-picker
           v-model="selectedDate"
@@ -419,7 +427,6 @@ const goBack = () => {
 
 const searchServices = () => {
   pagination.value.currentPage = 1
-  console.log('搜索服务', { searchKeyword: searchKeyword.value, category: serviceCategory.value, date: selectedDate.value })
 }
 
 const viewServiceDetail = (serviceId) => {
@@ -491,16 +498,47 @@ const handleCurrentChange = (current) => {
 // 生命周期钩子
 onMounted(() => {
   // 这里应该调用API获取服务数据
-  console.log('加载服务预约数据')
 })
 </script>
+
+<style>
+/* 应用UserHome页面的颜色主题 */
+:root {
+  /* 全局深色科技感变量（保留原有基调，提亮文字） */
+  --bg-dark: #0f172a; /* 页面主背景（原深色不变，保证科技感） */
+  --bg-darker: #020617; /* 深层背景（原不变，增强层次） */
+  --text-primary: #ffffff; /* 提亮为纯白！核心文字更醒目 */
+  --text-secondary: #e0f2fe; /* 次要文字提亮为亮浅蓝 */
+  --border-glass: rgba(138, 205, 236, 0.4); /* 边框透明度提高，更亮更醒目 */
+  --glow-blue: 0 0 18px rgba(14, 165, 233, 0.7); /* 蓝光更亮，增强科技感 */
+  --glow-green: 0 0 18px rgba(16, 185, 129, 0.7); /* 绿光同步提亮 */
+  
+  /* Element UI 全局覆盖变量（同步优化，保持蓝紫协调） */
+  --el-bg-color: rgb(15, 23, 42); /* 组件基础背景（深色） */
+  --el-text-color-primary: #38bdf8; /* 组件主文字（亮天蓝） */
+  --el-border-color: rgba(14, 165, 233, 0.5); /* 边框透明度提高，更亮 */
+  --el-color-primary: #38bdf8; /* 主色调（亮天蓝） */
+  --el-text-color-regular: #38bdf8; /* table文字颜色 */
+  /* 补充缺失变量，优化细节 */
+  --el-text-color-secondary: #e0f2fe; /* 次要文字同步提亮 */
+  --el-text-color-placeholder: #93c5fd; /* 占位文字提亮，避免过暗 */
+  --el-border-color-hover: rgba(14, 165, 233, 0.8); /* hover 边框更亮 */
+  /* 新增：输入框专属深色背景（核心优化） */
+  --el-input-bg: #0f172a; /* 输入框/下拉框深色背景，比组件背景更深 */
+  --el-input-hover-bg: #1e293b; /* 输入框hover背景 */
+  /* 补充缺失的变量 */
+  --primary-color: #38bdf8;
+  --primary-hover: #0284c7;
+  --secondary-color: #10b981;
+}
+</style>
 
 <style scoped>
 .service-appointment {
   padding: 20px;
   min-height: 100vh;
-  background-color: #0f172a;
-  background-image: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  background-color: var(--bg-dark);
+  background-image: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, var(--bg-dark) 100%);
 }
 
 .page-header {
@@ -509,15 +547,19 @@ onMounted(() => {
 }
 
 .page-header h2 {
-  font-size: 24px;
-  font-weight: 600;
+  font-size: 28px;
+  font-weight: 700;
   color: var(--el-color-primary);
-  margin-bottom: 8px;
+  margin-bottom: 12px;
+  text-shadow: 0 0 10px rgba(14, 165, 233, 0.5);
 }
 
 .page-header p {
-  font-size: 14px;
-  color: var(--el-text-color-secondary);
+  font-size: 16px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  line-height: 1.6;
+  text-shadow: 0 0 5px rgba(14, 165, 233, 0.3);
 }
 
 .back-button-container {
@@ -545,8 +587,18 @@ onMounted(() => {
 
 .search-filter-card {
   margin-bottom: 24px;
-  background-color: rgba(30, 41, 59, 0.9);
-  border: 1px solid rgba(59, 130, 246, 0.3);
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(22, 34, 51, 0.8));
+  border: 1px solid var(--border-glass);
+  border-radius: 16px;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.search-filter-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--glow-blue), 0 8px 32px rgba(0, 0, 0, 0.2);
+  border-color: var(--el-color-primary);
 }
 
 .search-filter {
@@ -563,6 +615,41 @@ onMounted(() => {
 .category-select,
 .date-picker {
   width: 200px;
+}
+
+/* 输入框样式 */
+.el-input__wrapper {
+  background-color: rgba(15, 23, 42, 0.8) !important;
+  border: 1px solid var(--border-glass) !important;
+}
+
+.el-input__inner {
+  background-color: transparent !important;
+  color: var(--el-text-color-primary) !important;
+}
+
+/* 日期选择器样式 */
+.el-date-editor .el-input__wrapper {
+  background-color: rgba(15, 23, 42, 0.8) !important;
+}
+
+/* 下拉选择器样式 */
+.el-select .el-input__wrapper {
+  background-color: rgba(15, 23, 42, 0.8) !important;
+}
+
+.el-select-dropdown {
+  background-color: rgba(15, 23, 42, 0.9) !important;
+  border: 1px solid var(--border-glass) !important;
+}
+
+.el-select-dropdown__item {
+  color: var(--el-text-color-primary) !important;
+}
+
+.el-select-dropdown__item:hover {
+  background-color: rgba(14, 165, 233, 0.1) !important;
+  color: var(--el-color-primary) !important;
 }
 
 .hot-services-section,
@@ -595,16 +682,19 @@ onMounted(() => {
 
 .service-card {
   cursor: pointer;
-  transition: transform 0.3s ease;
-  background-color: rgba(23, 37, 84, 0.8);
-  border-radius: 8px;
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(22, 34, 51, 0.8));
+  border-radius: 16px;
   overflow: hidden;
-  border: 1px solid rgba(59, 130, 246, 0.5);
+  border: 1px solid var(--border-glass);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
 .service-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+  box-shadow: var(--glow-blue), 0 8px 32px rgba(0, 0, 0, 0.2);
+  border-color: var(--el-color-primary);
 }
 
 .service-card-content {
@@ -707,10 +797,19 @@ onMounted(() => {
 /* 表格卡片样式 - 调整颜色方案 */
 .services-table-card,
 .appointments-table-card {
-  background-color: rgba(30, 41, 59, 0.8); /* 调整透明度 */
-  border: 1px solid rgba(59, 130, 246, 0.5); /* 增加边框不透明度 */
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(22, 34, 51, 0.8));
+  border: 1px solid var(--border-glass);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
+}
+
+.services-table-card:hover,
+.appointments-table-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--glow-blue), 0 8px 32px rgba(0, 0, 0, 0.2);
+  border-color: var(--el-color-primary);
 }
 
 .services-table-card,
