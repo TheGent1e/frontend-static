@@ -2,13 +2,12 @@ import { fileURLToPath, URL } from 'node:url'
 
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
     vue(),
-    vueDevTools(),
+    // vueDevTools(), // 禁用 vueDevTools 插件
   ],
   resolve: {
     alias: {
@@ -48,7 +47,8 @@ export default defineConfig({
     // 预处理器选项
     preprocessorOptions: {
       scss: {
-        additionalData: `@import "@/assets/styles/variables.scss";`,
+        additionalData: `@import "@/assets/styles/variables.scss";
+`,
       },
     },
   },

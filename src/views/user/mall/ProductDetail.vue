@@ -238,15 +238,50 @@ const getSpecsTableData = (params) => {
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
+  background-color: var(--bg-dark);
+  min-height: calc(100vh - var(--header-height, 0));
+  background-image: radial-gradient(var(--el-color-primary) 1px, transparent 1px);
+  background-size: 30px 30px;
+  background-attachment: scroll;
+  background-position: top left;
+  background-repeat: repeat;
+}
+
+/* 应用UserHome页面的颜色主题 */
+:root {
+  /* 全局深色科技感变量（保留原有基调，提亮文字） */
+  --bg-dark: #0f172a; /* 页面主背景（原深色不变，保证科技感） */
+  --bg-darker: #020617; /* 深层背景（原不变，增强层次） */
+  --text-primary: #ffffff; /* 提亮为纯白！核心文字更醒目 */
+  --text-secondary: #e0f2fe; /* 次要文字提亮为亮浅蓝 */
+  --border-glass: rgba(138, 205, 236, 0.4); /* 边框透明度提高，更亮更醒目 */
+  --glow-blue: 0 0 18px rgba(14, 165, 233, 0.7); /* 蓝光更亮，增强科技感 */
+  --glow-green: 0 0 18px rgba(16, 185, 129, 0.7); /* 绿光同步提亮 */
+  
+  /* Element UI 全局覆盖变量（同步优化，保持蓝紫协调） */
+  --el-bg-color: rgb(15, 23, 42); /* 组件基础背景（深色） */
+  --el-text-color-primary: #38bdf8; /* 组件主文字（亮天蓝） */
+  --el-border-color: rgba(14, 165, 233, 0.5); /* 边框透明度提高，更亮 */
+  --el-color-primary: #38bdf8; /* 主色调（亮天蓝） */
+  --el-text-color-regular: #38bdf8; /* table文字颜色 */
+  /* 补充缺失变量，优化细节 */
+  --el-text-color-secondary: #e0f2fe; /* 次要文字同步提亮 */
+  --el-text-color-placeholder: #93c5fd; /* 占位文字提亮，避免过暗 */
+  --el-border-color-hover: rgba(14, 165, 233, 0.8); /* hover 边框更亮 */
+  /* 新增：输入框专属深色背景（核心优化） */
+  --el-input-bg: #0f172a; /* 输入框/下拉框深色背景，比组件背景更深 */
+  --el-input-hover-bg: #1e293b; /* 输入框hover背景 */
 }
 
 .loading-container,
 .empty-container {
-  background-color: #fff;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(22, 34, 51, 0.8));
   padding: 40px;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   margin-top: 20px;
+  border: 1px solid var(--border-glass);
+  backdrop-filter: blur(8px);
 }
 
 .product-content {
@@ -254,11 +289,12 @@ const getSpecsTableData = (params) => {
 }
 
 .product-image-section {
-  background-color: #fff;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(22, 34, 51, 0.8));
   padding: 24px;
   border-radius: 12px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(14, 165, 233, 0.1);
+  border: 1px solid var(--border-glass);
+  backdrop-filter: blur(8px);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -273,7 +309,7 @@ const getSpecsTableData = (params) => {
   padding-top: 100%;
   overflow: hidden;
   border-radius: 8px;
-  background-color: #f9fafb;
+  background: rgba(15, 23, 42, 0.5);
   transition: all 0.3s;
 }
 
@@ -316,11 +352,12 @@ const getSpecsTableData = (params) => {
 }
 
 .product-info-section {
-  background-color: #fff;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(22, 34, 51, 0.8));
   padding: 32px;
   border-radius: 12px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(14, 165, 233, 0.1);
+  border: 1px solid var(--border-glass);
+  backdrop-filter: blur(8px);
 }
 
 .breadcrumb {
@@ -346,7 +383,7 @@ const getSpecsTableData = (params) => {
 .product-title {
   font-size: 28px;
   font-weight: 600;
-  color: #333;
+  color: var(--text-primary);
   margin-bottom: 20px;
   line-height: 1.5;
   position: relative;
@@ -369,8 +406,9 @@ const getSpecsTableData = (params) => {
   display: flex;
   align-items: center;
   padding: 12px 16px;
-  background-color: #f9fafb;
+  background: rgba(15, 23, 42, 0.8);
   border-radius: 8px;
+  border: 1px solid var(--border-glass);
 }
 
 .rating-stars {
@@ -392,7 +430,7 @@ const getSpecsTableData = (params) => {
 }
 
 .price-section {
-  background-color: #f9fafb;
+  background: rgba(15, 23, 42, 0.8);
   padding: 24px;
   border-radius: 12px;
   margin-bottom: 24px;
@@ -400,8 +438,9 @@ const getSpecsTableData = (params) => {
   align-items: center;
   flex-wrap: wrap;
   gap: 24px;
-  border-left: 4px solid #0ea5e9;
+  border-left: 4px solid var(--el-color-primary);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--border-glass);
 }
 
 .current-price {
@@ -423,10 +462,11 @@ const getSpecsTableData = (params) => {
 
 .sales-info {
   font-size: 14px;
-  color: #6b7280;
+  color: var(--text-secondary);
   padding: 4px 12px;
-  background-color: #f3f4f6;
+  background: rgba(14, 165, 233, 0.1);
   border-radius: 6px;
+  border: 1px solid var(--border-glass);
 }
 
 .quantity-section {
@@ -434,13 +474,13 @@ const getSpecsTableData = (params) => {
   display: flex;
   align-items: center;
   padding: 16px 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid var(--border-glass);
 }
 
 .section-label {
   margin-right: 16px;
   font-size: 15px;
-  color: #333;
+  color: var(--text-primary);
   font-weight: 500;
   min-width: 80px;
 }
@@ -534,16 +574,17 @@ const getSpecsTableData = (params) => {
 
 .detail-tabs {
   margin-top: 32px;
-  background-color: #fff;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(22, 34, 51, 0.8));
   border-radius: 12px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   overflow: hidden;
-  border: 1px solid rgba(14, 165, 233, 0.1);
+  border: 1px solid var(--border-glass);
+  backdrop-filter: blur(8px);
 }
 
 .detail-tabs .el-tabs__header {
-  border-bottom: 1px solid #e5e7eb;
-  background-color: #f9fafb;
+  border-bottom: 1px solid var(--border-glass);
+  background: rgba(15, 23, 42, 0.9);
 }
 
 .detail-tabs .el-tabs__nav {
@@ -572,8 +613,9 @@ const getSpecsTableData = (params) => {
 .detail-content {
   padding: 32px;
   line-height: 1.8;
-  color: #333;
+  color: var(--text-primary);
   font-size: 16px;
+  background: rgba(15, 23, 42, 0.8);
 }
 
 .detail-content img {
@@ -585,8 +627,30 @@ const getSpecsTableData = (params) => {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+.detail-content h3 {
+  color: var(--el-color-primary);
+  margin-top: 24px;
+  margin-bottom: 16px;
+}
+
+.detail-content p {
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+}
+
+.detail-content ul {
+  color: var(--text-secondary);
+  margin-left: 24px;
+  margin-bottom: 16px;
+}
+
+.detail-content li {
+  margin-bottom: 8px;
+}
+
 .specs-content {
   padding: 32px;
+  background: rgba(15, 23, 42, 0.8);
 }
 
 .specifications-table {
@@ -594,29 +658,87 @@ const getSpecsTableData = (params) => {
   border-collapse: collapse;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid var(--border-glass);
 }
 
 .specifications-table th {
-  background-color: #f9fafb;
+  background: rgba(14, 165, 233, 0.1);
   padding: 14px;
   text-align: left;
   font-weight: 600;
-  border-bottom: 1px solid #e5e7eb;
-  color: #333;
+  border-bottom: 1px solid var(--border-glass);
+  color: var(--el-color-primary);
   font-size: 15px;
 }
 
 .specifications-table td {
   padding: 14px;
-  border-bottom: 1px solid #e5e7eb;
-  color: #6b7280;
+  border-bottom: 1px solid var(--border-glass);
+  color: var(--text-secondary);
   font-size: 15px;
-  background-color: #fff;
+  background: rgba(15, 23, 42, 0.8);
 }
 
 .specifications-table tr:last-child td {
   border-bottom: none;
+}
+
+/* Element UI 表格样式覆盖 */
+.el-table {
+  --el-table-bg-color: transparent;
+  --el-table-header-bg-color: rgba(15, 23, 42, 0.8);
+  --el-table-border-color: var(--border-glass);
+  --el-table-text-color: var(--el-text-color-primary);
+  --el-table-row-hover-bg-color: rgba(14, 165, 233, 0.1);
+  background: transparent;
+}
+
+.el-table__inner-wrapper {
+  background: transparent;
+}
+
+/* 表格滚动条样式 */
+.el-table__body-wrapper .el-scrollbar {
+  background: transparent;
+}
+
+.el-table__body-wrapper .el-scrollbar__wrap {
+  background: transparent;
+}
+
+.el-table__body-wrapper .el-scrollbar__view {
+  background: transparent;
+}
+
+/* 隐藏列样式 */
+.hidden-columns {
+  background: transparent;
+}
+
+.el-table__header-wrapper th {
+  background-color: rgba(15, 23, 42, 0.8) !important;
+  color: var(--el-text-color-primary) !important;
+  font-weight: 600 !important;
+  border-bottom: 1px solid var(--border-glass) !important;
+}
+
+.el-table__body-wrapper tr {
+  transition: all 0.3s ease;
+  background-color: rgba(15, 23, 42, 0.6) !important;
+  border-bottom: 1px solid var(--border-glass) !important;
+}
+
+.el-table__body-wrapper tr:hover {
+  background-color: rgba(14, 165, 233, 0.1) !important;
+  box-shadow: inset 0 0 10px rgba(14, 165, 233, 0.1) !important;
+  transform: translateY(-1px) !important;
+}
+
+.el-table__body-wrapper td {
+  color: var(--el-text-color-primary) !important;
+  border-bottom: 1px solid var(--border-glass) !important;
 }
 
 /* 响应式设计 */
@@ -674,5 +796,146 @@ const getSpecsTableData = (params) => {
   .detail-content {
     font-size: 15px;
   }
+}
+
+/* 链接按钮样式优化 */
+.el-button--link {
+  color: var(--el-color-primary) !important;
+  background-color: transparent !important;
+  border: none !important;
+  transition: all 0.3s ease;
+}
+
+.el-button--link:hover {
+  color: var(--el-color-primary) !important;
+  background-color: rgba(14, 165, 233, 0.1) !important;
+  border-color: transparent !important;
+  text-decoration: none !important;
+  box-shadow: 0 0 10px rgba(14, 165, 233, 0.2);
+}
+
+.el-button--link:active {
+  color: var(--el-color-primary) !important;
+  background-color: rgba(14, 165, 233, 0.2) !important;
+  border-color: transparent !important;
+}
+
+/* 文字按钮样式优化 */
+.el-button--text {
+  color: var(--text-secondary) !important;
+  background-color: transparent !important;
+  border: none !important;
+  transition: all 0.3s ease;
+  padding: 6px 12px !important;
+  border-radius: 8px !important;
+}
+
+.el-button--text:hover {
+  color: var(--el-color-primary) !important;
+  background-color: rgba(14, 165, 233, 0.1) !important;
+  border-color: transparent !important;
+  box-shadow: 0 0 10px rgba(14, 165, 233, 0.2);
+}
+
+.el-button--text:active {
+  color: var(--el-color-primary) !important;
+  background-color: rgba(14, 165, 233, 0.2) !important;
+  border-color: transparent !important;
+}
+
+/* 主按钮样式优化 */
+.el-button--primary {
+  background: linear-gradient(135deg, var(--el-color-primary) 0%, #0284c7 100%) !important;
+  border: none !important;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+}
+
+.el-button--primary:hover {
+  background: linear-gradient(135deg, #0284c7 0%, var(--el-color-primary) 100%) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 20px rgba(14, 165, 233, 0.4);
+}
+
+.el-button--primary:active {
+  transform: translateY(0) !important;
+  box-shadow: 0 2px 8px rgba(14, 165, 233, 0.3);
+}
+
+/* 输入框样式优化 - 统一所有页面的输入框样式 */
+.el-input__wrapper {
+  background-color: rgba(15, 23, 42, 0.8) !important;
+  border: 1px solid var(--border-glass) !important;
+  transition: all 0.3s ease;
+  box-shadow: none !important;
+}
+
+.el-input__wrapper:hover {
+  background-color: rgba(15, 23, 42, 0.9) !important;
+  border-color: var(--el-color-primary) !important;
+  box-shadow: 0 0 10px rgba(14, 165, 233, 0.2) !important;
+}
+
+.el-input__wrapper.is-focus {
+  background-color: rgba(15, 23, 42, 0.9) !important;
+  border-color: var(--el-color-primary) !important;
+  box-shadow: 0 0 15px rgba(14, 165, 233, 0.3) !important;
+}
+
+.el-input__inner {
+  background-color: transparent !important;
+  color: var(--el-text-color-primary) !important;
+}
+
+/* 输入框前缀/后缀图标颜色 */
+.el-input__prefix-inner,
+.el-input__suffix-inner {
+  color: var(--el-text-color-secondary) !important;
+}
+
+/* 输入框清空按钮样式 */
+.el-input__clear {
+  color: var(--el-text-color-secondary) !important;
+  opacity: 0.6;
+  transition: all 0.3s ease;
+}
+
+.el-input__clear:hover {
+  color: var(--el-color-primary) !important;
+  opacity: 1;
+}
+
+/* 数量输入框样式优化 */
+.el-input-number {
+  --el-input-number-bg-color: rgba(15, 23, 42, 0.8);
+  --el-input-number-btn-bg-color: rgba(15, 23, 42, 0.8);
+  --el-input-number-btn-hover-bg-color: rgba(14, 165, 233, 0.1);
+  --el-input-number-btn-border-color: var(--border-glass);
+  --el-input-number-input-bg-color: rgba(15, 23, 42, 0.8);
+  --el-input-number-input-text-color: var(--el-text-color-primary);
+  --el-input-number-input-border-color: var(--border-glass);
+}
+
+.el-input-number__decrease,
+.el-input-number__increase {
+  background-color: rgba(15, 23, 42, 0.8) !important;
+  border-color: var(--border-glass) !important;
+  color: var(--el-text-color-primary) !important;
+  transition: all 0.3s ease;
+}
+
+.el-input-number__decrease:hover,
+.el-input-number__increase:hover {
+  background-color: rgba(14, 165, 233, 0.1) !important;
+  border-color: var(--el-color-primary) !important;
+  color: var(--el-color-primary) !important;
+  box-shadow: 0 0 10px rgba(14, 165, 233, 0.2);
+}
+
+.el-input-number__decrease:active,
+.el-input-number__increase:active {
+  background-color: rgba(14, 165, 233, 0.2) !important;
+  border-color: var(--el-color-primary) !important;
+  color: var(--el-color-primary) !important;
 }
 </style>

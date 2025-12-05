@@ -640,19 +640,15 @@ export default {
       // 创建AbortController用于中断请求
       const controller = new AbortController();
       const signal = controller.signal;
-
       // 存储用于取消模拟响应的定时器
       let timeoutIds = [];
-
       // 提供取消方法
       const cancelFn = () => {
         // 取消fetch请求
         controller.abort();
-
         // 清除所有定时器
         timeoutIds.forEach(id => clearTimeout(id));
         timeoutIds = [];
-
         console.log('流式请求已取消');
       };
 
